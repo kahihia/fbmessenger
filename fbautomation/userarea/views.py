@@ -3,4 +3,4 @@ from django.views import generic
 
 def index(request):
 
-    return render(request, "dashboard.html")
+    return render(request, "dashboard/overview.html")

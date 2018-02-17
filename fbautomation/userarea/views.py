@@ -13,7 +13,7 @@ from .models import Avatar
 @login_required
 def index(request):
 
-    return render(request, "base_generic.html")
+    return render(request, "dashboard.html")
 
 
 def signup(request):

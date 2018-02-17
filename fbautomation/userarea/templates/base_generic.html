@@ -7,7 +7,7 @@
 	<link rel="icon" type="image/png" sizes="96x96" href="{% static 'assets/img/favicon.png' %}">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-    {% block title %}<title>Paper Dashboard PRO by Creative Tim</title> {% endblock %}
+    {% block title %}<title>FB Automation SaaS</title> {% endblock %}
 
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -43,13 +43,14 @@
 				</a>
 
                 <a href="{% url 'index' %}" class="simple-text logo-normal">
-					Creative Tim
+                    FB Automation
 				</a>
 			</div>
 	    	<div class="sidebar-wrapper">
 				<div class="user">
 	                <div class="photo">
-	                    <img src="{% static 'assets/img/faces/face-2.jpg' %}" />
+	                    <!-- <img src="{% static 'assets/img/faces/face-2.jpg' %}" /> -->
+                        <img src="{{ user.avatar }}" />
 	                </div>
 	                <div class="info">
 						<a data-toggle="collapse" href="#collapseExample" class="collapsed">
@@ -63,7 +64,7 @@
 	                    <div class="collapse" id="collapseExample">
 	                        <ul class="nav">
 	                            <li>
-									<a href="#profile">
+                                    <a href="{% url 'profile' %}">
 										<span class="sidebar-mini">Mp</span>
 										<span class="sidebar-normal">My Profile</span>
 									</a>

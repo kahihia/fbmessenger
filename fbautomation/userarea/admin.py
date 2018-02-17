@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FacebookAccount, FacebookMessage, FacebookProfileUrl
+from .models import FacebookAccount, FacebookMessage, FacebookProfileUrl, Avatar
 
 
 @admin.register(FacebookAccount)
@@ -16,3 +16,8 @@ class FacebookMessageAdmin(admin.ModelAdmin):
 @admin.register(FacebookProfileUrl)
 class FacebookProfileUrlAdmin(admin.ModelAdmin):
     list_display = ("url", "created_on")
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    list_display = ("user", "created_on")

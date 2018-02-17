@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 import datetime
 
 
-class ProfileUrl(models.Model):
+class FacebookProfileUrl(models.Model):
 
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
@@ -41,11 +41,12 @@ class FacebookAccount(models.Model):
         return "{}".format(self.username)
 
 
-class Message(models.Model):
+class FacebookMessage(models.Model):
 
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
 
+    title = models.CharField(max_length=250, null=True, blank=True)
     body = models.TextField(max_length=1000, null=True, blank=True)
 
     is_deleted = models.BooleanField(default=False)

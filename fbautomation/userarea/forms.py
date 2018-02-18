@@ -5,7 +5,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import Avatar, FacebookAccount
+from .models import Avatar, FacebookAccount, FacebookProfileUrl
 
 
 class SignupForm(UserCreationForm):
@@ -53,6 +53,21 @@ class FacebookAccountForm(forms.ModelForm):
         fields = ("username", "password")
 
 
+class FacebookProfileForm(forms.ModelForm):
+
+    url = forms.URLField(label="Url", required=True,
+                         widget=forms.URLInput(attrs={"class": "form-control broder-input",
+                                                      "placeholder": "Enter url: http://"}))
+
+    class Meta:
+        model = FacebookProfileUrl
+        fields = ("url",)
+
+
+class BulkUrlform(forms.Form):
+    url = forms.CharField(label="URLs", required=True,
+                          widget=forms.Textarea(attrs={"class": "form-control",
+                                                       "placeholder": "Input bulk URLs"}))
 
 
 class PasswordChangeForm(PasswordChangeForm):

@@ -14,7 +14,7 @@ class FacebookProfileUrl(models.Model):
 
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
-    url = models.CharField(max_length=500, null=True, blank=True)
+    url = models.URLField(max_length=500, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)

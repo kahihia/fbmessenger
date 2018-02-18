@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm
+from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm
 from .models import Avatar, FacebookAccount, FacebookMessage, FacebookProfileUrl
 
 
@@ -79,7 +79,7 @@ def profile(request):
                 messages.success(request, "Your avatar was successfully updated!")
             user_form.save()
         else:
-            messages.error(request, 'Please aacorrect the error below.')
+            messages.error(request, 'Please correct the error below.')
     else:
         avatar_form = UserAvatarForm()
         password_form = PasswordChangeForm(request.user)
@@ -166,3 +166,37 @@ def get_fbaccount(request, pk):
     print(facebook_account)
     data = {"success": True, "username": facebook_account.username}
     return JsonResponse(data)
+
+
+@login_required
+def new_fburl(request):
+    if request.method == 'POST':
+        form = BulkUrlform(request.POST)
+        saved_url = False
+        wrong_url = False
+        if form.is_valid():
+            try:
+                urls = form.cleaned_data.get("url").split()
+                for url in urls:
+                    url_form = FacebookProfileForm({"url": url})
+                    if url_form.is_valid():
+                        url_form = url_form.save(commit=False)
+                        url_form.user = request.user
+                        url_form.save()
+                        saved_url = True
+                    else:
+                        wrong_url = True
+                if saved_url:
+                    messages.success(request, "Saved!")
+                if wrong_url:
+                    messages.error(request, "Some of urls are wrong and are not saved!")
+                return redirect('create_fburl')
+            except:
+                messages.error(request, "Each profile link must on a separate line.")
+                return redirect('create_fburl')
+        else:
+            messages.error(request, "Please correct the error below!")
+            return redirect('create_fburl')
+    else:
+        form = BulkUrlform()
+    return render(request, 'new_profile_url.html', {'form': form})

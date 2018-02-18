@@ -13,4 +13,7 @@ urlpatterns = [
     url(r'^ajax/remove/fbaccount/$', views.remove_fbaccount, name='remove_fbaccount'),
     url(r'^ajax/edit/fbaccount/$', views.edit_fbaccount, name='edit_fbaccount'),
     url(r'^ajax/get/fbaccount/(?P<pk>\d+)/$', views.get_fbaccount, name='get_fbaccount'),
+
+    url(r'^create/fburl/$', views.new_fburl, name='create_fburl'),
+
 ]

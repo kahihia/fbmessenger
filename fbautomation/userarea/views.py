@@ -1,13 +1,24 @@
 from django.shortcuts import render
-# from django.views import generic
+from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib import messages
+from django.http import JsonResponse
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm
+from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm
 from .models import Avatar
 
+
+class CreateFacebookAccount(generic.CreateView):
+    form_class = FacebookAccountForm
+    template_name = "create_facebook_account.html"
+
+
+@login_required
+def facebook_accounts(request):
+
+    return render(request, "facebook_accounts.html")
 
 
 @login_required
@@ -70,3 +81,20 @@ def profile(request):
     return render(request, "profile.html", {"password_form": password_form,
                                             "user_form": user_form,
                                             "avatar_form": avatar_form})
+
+@login_required
+def new_fbaccount(request):
+    if request.POST:
+        facebook_account_form = FacebookAccountForm(request.POST)
+        if facebook_account_form.is_valid():
+            facebook_account_form.save(commit=False)
+            facebook_account_form.user = request.user
+            facebook_account_form.save()
+            data = {"success": True}
+
+        else:
+            data = {"success": False,
+                    "error_message": facebook_account_form.errors}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"status": "You are not allowed to view this pag."})

@@ -1,0 +1,122 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Facebook accounts</h4>
+	                                <p class="category">Add/Modify/Remove</p>
+	                            </div>
+	                            <div class="card-content table-responsive table-full-width">
+                                    <div class="col-md-2 pull-right">
+                                        {% csrf_token %}
+                                        <button onclick="app.show_swal('new-account')" class="btn btn-wd btn-info btn-fill">
+                                            <span class="btn-label">
+                                                <i class="ti-plus"></i>
+                                            </span> Add new </button>
+                                    </div>
+	                                <table class="table">
+	                                    <thead>
+                                            </tr>
+	                                        <tr>
+	                                            <th class="text-center">#</th>
+	                                            <th>Username</th>
+	                                            <th>Created on</th>
+	                                            <th class="text-right">Actions</th>
+	                                        </tr>
+	                                    </thead>
+	                                    <tbody>
+	                                        <tr>
+	                                            <td class="text-center">1</td>
+	                                            <td>Andrew Mike</td>
+	                                            <td>Develop</td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+	                                        <tr>
+	                                            <td class="text-center">2</td>
+	                                            <td>John Doe</td>
+	                                            <td>Design</td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+	                                        <tr>
+	                                            <td class="text-center">3</td>
+	                                            <td>Alex Mike</td>
+	                                            <td>Design</td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+	                                        <tr>
+	                                            <td class="text-center">4</td>
+	                                            <td>Mike Monday</td>
+	                                            <td>Marketing</td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+	                                        <tr>
+	                                            <td class="text-center">5</td>
+	                                            <td>Paul Dickens</td>
+	                                            <td>Communication</td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+	                                    </tbody>
+	                                </table>
+	                            </div>
+                                <div class="card-footer text-right">
+
+											<ul class="pagination pagination-info">
+					                          <li><a href="#pdp"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a></li>
+					                          <li class="active"><a href="#pdp">1</a></li>
+					                          <li><a href="#pdp">2</a></li>
+					                          <li><a href="#pdp">3</a></li>
+					                          <li><a href="#pdp">4</a></li>
+					                          <li><a href="#pdp">5</a></li>
+					                          <li><a href="#pdp"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>
+											</ul>
+
+                                </div>
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+
+
+{% endblock %}

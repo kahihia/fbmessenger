@@ -5,7 +5,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import Avatar
+from .models import Avatar, FacebookAccount
 
 
 class SignupForm(UserCreationForm):
@@ -41,6 +41,18 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("username", "first_name", "last_name", "email")
+
+
+class FacebookAccountForm(forms.ModelForm):
+    username = forms.CharField(label="Username", widget=forms.TextInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter username'}))
+    password = forms.CharField(label="Current password",
+                               widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}), required=False)
+
+    class Meta:
+        model = FacebookAccount
+        fields = ("username", "password")
+
+
 
 
 class PasswordChangeForm(PasswordChangeForm):

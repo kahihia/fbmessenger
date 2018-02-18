@@ -29,84 +29,36 @@
 	                                        </tr>
 	                                    </thead>
 	                                    <tbody>
+                                            {% for account in accounts %}
 	                                        <tr>
-	                                            <td class="text-center">1</td>
-	                                            <td>Andrew Mike</td>
-	                                            <td>Develop</td>
+                                                <td class="text-center">{{ account.id }}</td>
+                                                <td>{{ account.username }}</td>
+	                                            <td>{{ account.created_on|date:"d/m/Y" }}</td>
 	                                            <td class="td-actions text-right">
-	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
+	                                                <button onclick="app.show_swal('edit-account', {{account.id}})"rel="tooltip" title="Edit Account" class="btn btn-success btn-simple btn-xs">
 	                                                    <i class="ti-pencil-alt"></i>
-	                                                </a>
-	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                </button>
+                                                    <button onclick="app.show_swal('remove-account', {{account.id}})" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
 	                                                    <i class="ti-close"></i>
-	                                                </a>
+	                                                </button>
 	                                            </td>
 	                                        </tr>
-	                                        <tr>
-	                                            <td class="text-center">2</td>
-	                                            <td>John Doe</td>
-	                                            <td>Design</td>
-	                                            <td class="td-actions text-right">
-	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
-	                                                </a>
-	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="ti-close"></i>
-	                                                </a>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td class="text-center">3</td>
-	                                            <td>Alex Mike</td>
-	                                            <td>Design</td>
-	                                            <td class="td-actions text-right">
-	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
-	                                                </a>
-	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="ti-close"></i>
-	                                                </a>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td class="text-center">4</td>
-	                                            <td>Mike Monday</td>
-	                                            <td>Marketing</td>
-	                                            <td class="td-actions text-right">
-	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
-	                                                </a>
-	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="ti-close"></i>
-	                                                </a>
-	                                            </td>
-	                                        </tr>
-	                                        <tr>
-	                                            <td class="text-center">5</td>
-	                                            <td>Paul Dickens</td>
-	                                            <td>Communication</td>
-	                                            <td class="td-actions text-right">
-	                                                <a href="#" rel="tooltip" title="Edit Profile" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
-	                                                </a>
-	                                                <a href="#" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="ti-close"></i>
-	                                                </a>
-	                                            </td>
-	                                        </tr>
+                                            {% endfor %}
 	                                    </tbody>
 	                                </table>
 	                            </div>
                                 <div class="card-footer text-right">
 
 											<ul class="pagination pagination-info">
-					                          <li><a href="#pdp"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a></li>
-					                          <li class="active"><a href="#pdp">1</a></li>
-					                          <li><a href="#pdp">2</a></li>
-					                          <li><a href="#pdp">3</a></li>
-					                          <li><a href="#pdp">4</a></li>
-					                          <li><a href="#pdp">5</a></li>
-					                          <li><a href="#pdp"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>
+                      {% if accounts.has_previous %}
+                        <li><a href="{{ request.path }}?page={{ accounts.previous_page_number }}"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a></li>
+                      {% endif %}
+                      {% for num in accounts.paginator.page_range %}
+                      <li {% ifequal num accounts.number %} class="active" {% endifequal %}><a href="{{ request.path }}?page={{ num }}">{{ num }}</a></li>
+                      {% endfor %}
+                      {% if accounts.has_next %}
+                        <li><a href="{{ request.path }}?page={{ accounts.next_page_number }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>
+                      {% endif %}
 											</ul>
 
                                 </div>

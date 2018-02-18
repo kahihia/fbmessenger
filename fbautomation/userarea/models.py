@@ -40,7 +40,7 @@ class FacebookAccount(models.Model):
 
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["-id"]
 
     def __str__(self):
         return "{}".format(self.username)

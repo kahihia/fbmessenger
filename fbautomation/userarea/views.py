@@ -4,10 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib import messages
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm
-from .models import Avatar
+from .models import Avatar, FacebookAccount, FacebookMessage, FacebookProfileUrl
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -17,8 +18,20 @@ class CreateFacebookAccount(generic.CreateView):
 
 @login_required
 def facebook_accounts(request):
+    accounts = FacebookAccount.objects.filter(user=request.user, is_deleted=False)
+    paginator = Paginator(accounts, 10)
+    page = request.GET.get("page")
 
-    return render(request, "facebook_accounts.html")
+    try:
+        accounts = paginator.page(page)
+    except PageNotAnInteger:
+        accounts = paginator.page(1)
+    except EmptyPage:
+        accounts = paginator.page(paginator.num_pages)
+
+
+    print(accounts)
+    return render(request, "facebook_accounts.html", {"accounts": accounts})
 
 
 @login_required
@@ -87,7 +100,7 @@ def new_fbaccount(request):
     if request.POST:
         facebook_account_form = FacebookAccountForm(request.POST)
         if facebook_account_form.is_valid():
-            facebook_account_form.save(commit=False)
+            facebook_account_form = facebook_account_form.save(commit=False)
             facebook_account_form.user = request.user
             facebook_account_form.save()
             data = {"success": True}
@@ -97,4 +110,59 @@ def new_fbaccount(request):
                     "error_message": facebook_account_form.errors}
         return JsonResponse(data)
     else:
-        return JsonResponse({"status": "You are not allowed to view this pag."})
+        return JsonResponse({"status": "You are not allowed to view this page."})
+
+
+@login_required
+def remove_fbaccount(request):
+    if request.POST:
+        print(request.POST.get("id"))
+        facebook_account = FacebookAccount.objects.filter(pk=request.POST.get("id"),
+                                                          user=request.user,
+                                                          is_deleted=False)[0]
+        print(facebook_account)
+        if facebook_account:
+            facebook_account.is_deleted = True
+            facebook_account.save()
+            data = {"success": True}
+        else:
+            data = {"success": False}
+
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"status": "You are not allowed to view this page."})
+
+
+@login_required
+def edit_fbaccount(request):
+    if request.POST:
+        print("Aq var")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        facebook_account = FacebookAccount.objects.filter(pk=request.POST.get("id"),
+                                                          user=request.user,
+                                                          is_deleted=False)[0]
+        print(facebook_account)
+        if facebook_account:
+            if username:
+                facebook_account.username = username
+            if password:
+                facebook_account.password = password
+            facebook_account.save()
+            data = {"success": True}
+        else:
+            data = {"success": False}
+
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"status": "You are not allowed to view this page."})
+
+
+@login_required
+def get_fbaccount(request, pk):
+    facebook_account = FacebookAccount.objects.filter(pk=pk,
+                                                        user=request.user,
+                                                        is_deleted=False)[0]
+    print(facebook_account)
+    data = {"success": True, "username": facebook_account.username}
+    return JsonResponse(data)

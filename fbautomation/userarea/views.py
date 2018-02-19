@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib import messages
 from django.http import JsonResponse
+from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -36,8 +37,14 @@ def facebook_accounts(request):
 
 @login_required
 def index(request):
+    accounts = FacebookAccount.objects.filter(user=request.user,
+                                              is_deleted=False).count()
+    profile_urls = FacebookProfileUrl.objects.filter(user=request.user,
+                                                     is_deleted=False).count()
 
-    return render(request, "dashboard.html")
+
+    return render(request, "dashboard.html", {"accounts": accounts,
+                                              "profile_urls": profile_urls})
 
 
 def signup(request):
@@ -136,13 +143,11 @@ def remove_fbaccount(request):
 @login_required
 def edit_fbaccount(request):
     if request.POST:
-        print("Aq var")
         username = request.POST.get("username")
         password = request.POST.get("password")
         facebook_account = FacebookAccount.objects.filter(pk=request.POST.get("id"),
                                                           user=request.user,
                                                           is_deleted=False)[0]
-        print(facebook_account)
         if facebook_account:
             if username:
                 facebook_account.username = username
@@ -200,3 +205,44 @@ def new_fburl(request):
     else:
         form = BulkUrlform()
     return render(request, 'new_profile_url.html', {'form': form})
+
+
+@login_required
+def remove_fburl(request):
+    if request.POST:
+        facebook_url = FacebookProfileUrl.objects.filter(pk=request.POST.get("id"),
+                                                          user=request.user,
+                                                          is_deleted=False)[0]
+        print(facebook_url)
+        if facebook_url:
+            facebook_url.is_deleted = True
+            facebook_url.save()
+            data = {"success": True}
+        else:
+            data = {"success": False}
+
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"status": "You are not allowed to view this page."})
+
+
+class UpdateFacebookProfileUrl(generic.UpdateView):
+    model = FacebookProfileUrl
+    form_class = FacebookProfileForm
+    template_name = "edit_profile_url.html"
+
+    def get_success_url(self):
+        return reverse("facebook_url_list")
+
+
+class FacebookProfileUrlView(generic.ListView):
+    model = FacebookProfileUrl
+    paginate_by = 10
+    context_object_name = "urls"
+    template_name = "facebook_profile_url.html"
+
+    def get_queryset(self):
+        queryset = FacebookProfileUrl.objects.filter(user=self.request.user,
+                                                     is_deleted=False)
+        return queryset
+

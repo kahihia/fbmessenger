@@ -92,9 +92,44 @@ $( document  ).ready(function() {
                                 }).then(function(result){
                                   location.reload();
                               })
-
     }
 
+    function  remove_url_callback(response){
+        if (response.success === true){
+
+            title = 'Deleted!'
+            type = 'success',
+            text = 'Your URL has been deleted.'
+        } else {
+            title = 'Not deleted!'
+            type = 'warning',
+            text = 'Your URL could not been deleted.'
+
+        }
+                              swal({
+                                title: title,
+                                text: text,
+                                type: type,
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                buttonsStyling: false
+                                }).then(function(result){
+                                  location.reload();
+                              })
+    }
+
+    function remove_url(id, callback){
+        console.log(id);
+        if (id){
+            $.ajax({
+                url: "/ajax/remove/fburl/",
+                method: "POST",
+                data: {csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                    id: id},
+                success: callback
+
+            });
+        }
+    }
 
     function remove_account(id, callback){
         console.log(id);
@@ -153,7 +188,7 @@ $( document  ).ready(function() {
             } else if(type == "edit-account"){
                 a = $.getJSON("/ajax/get/fbaccount/"+ data +"/", function(result){
                     username = result.username;
-                }).then(function(){
+                }).then(function(result){
                 swal({
                         title: 'Edit Facebook Account',
                         html: '<div class="form-group">' +
@@ -174,6 +209,23 @@ $( document  ).ready(function() {
                         edit_account(data, username, password, edit_account_callback);
                     }).catch(swal.noop)
                 });
+            } else if(type == "remove-url"){
+                console.log("Hey");
+                        swal({
+                                title: 'Are you sure?',
+                                text: 'You will not be able to recover this URL!',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, delete it!',
+                                cancelButtonText: 'No, keep it',
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                cancelButtonClass: "btn btn-danger btn-fill",
+                                buttonsStyling: false
+                            }).then(function(result) {
+
+                                   remove_url(data, remove_url_callback);
+                            });
+
             } // end if
     } // end show_swal
 

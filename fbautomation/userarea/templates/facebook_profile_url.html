@@ -1,0 +1,73 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Facebook Profile URLs</h4>
+	                                <p class="category">Add/Modify/Remove</p>
+	                            </div>
+	                            <div class="card-content table-responsive table-full-width">
+                                    <div class="col-md-2 pull-right">
+                                        {% csrf_token %}
+                                        <a href="{% url 'create_fburl' %}" class="btn btn-wd btn-info btn-fill">
+                                            <span class="btn-label">
+                                                <i class="ti-plus"></i>
+                                            </span> Add new </a>
+                                    </div>
+	                                <table class="table">
+	                                    <thead>
+                                            </tr>
+	                                        <tr>
+	                                            <th class="text-center">#</th>
+	                                            <th>Url</th>
+	                                            <th>Created on</th>
+	                                            <th class="text-right">Actions</th>
+	                                        </tr>
+	                                    </thead>
+	                                    <tbody>
+                                            {% for profile_url in urls %}
+	                                        <tr>
+                                                <td class="text-center">{{ profile.id }}</td>
+                                                <td>{{ profile_url.url }}</td>
+	                                            <td>{{ profile_url.created_on|date:"d/m/Y" }}</td>
+	                                            <td class="td-actions text-right">
+                                                    <a href="{% url 'update_fburl' profile_url.id %}"rel="tooltip" title="Edit URL" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+                                                    <button onclick="app.show_swal('remove-url', {{profile_url.id}})" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="ti-close"></i>
+	                                                </button>
+	                                            </td>
+	                                        </tr>
+                                            {% endfor %}
+	                                    </tbody>
+	                                </table>
+	                            </div>
+                                <div class="card-footer text-right">
+
+											<ul class="pagination pagination-info">
+                      {% if page_obj.has_previous %}
+                        <li><a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a></li>
+                      {% endif %}
+                      {% for num in page_obj.paginator.page_range %}
+                      <li {% ifequal num page_obj.number %} class="active" {% endifequal %}><a href="{{ request.path }}?page={{ num }}">{{ num }}</a></li>
+                      {% endfor %}
+                      {% if page_obj.has_next %}
+                        <li><a href="{{ request.path }}?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>
+                      {% endif %}
+											</ul>
+
+                                </div>
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+
+{% endblock %}

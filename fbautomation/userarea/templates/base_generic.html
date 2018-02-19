@@ -92,10 +92,32 @@
 	                </div>
 	            </div>
 	            <ul class="nav">
-	                <li>
+                    {% url 'index' as index_url %}
+                    <li {% if request.get_full_path == index_url %} class="active" {% endif %}>
+                        <a href="{% url 'index' %}">
+                            <i class="ti-panel"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    {% url 'facebook_url_list' as profiles_url%}
+                    <li {% if request.get_full_path == profiles_url %} class="active" {% endif %}>
+                        <a href="{% url 'facebook_url_list' %}">
+	                        <i class="ti-user"></i>
+	                        <p>Facebook Profiles</p>
+	                    </a>
+	                </li>
+                    {% url 'fbaccounts' as fbacc_url%}
+                    <li {% if request.get_full_path == fbacc_url %} class="active" {% endif %}>
                         <a href="{% url 'fbaccounts' %}">
 	                        <i class="ti-facebook"></i>
 	                        <p>Facebook accounts</p>
+	                    </a>
+	                </li>
+                    {% url 'profile' as profile_url%}
+                    <li {% if request.get_full_path == profile_url %} class="active" {% endif %}>
+                        <a href="{% url 'profile' %}">
+	                        <i class="ti-settings"></i>
+	                        <p>Profile settings</p>
 	                    </a>
 	                </li>
 					<li>
@@ -148,7 +170,7 @@
 	                        <span class="icon-bar bar2"></span>
 	                        <span class="icon-bar bar3"></span>
 	                    </button>
-	                    <a class="navbar-brand" href="#charts">Template</a>
+	                    <a class="navbar-brand" href="#charts">Tool</a>
 	                </div>
 	                <div class="collapse navbar-collapse">
 						<form class="navbar-form navbar-left navbar-search-form" role="search">
@@ -212,8 +234,8 @@
 	                <nav class="pull-left">
 	                    <ul>
 	                        <li>
-	                            <a href="http://www.creative-tim.com">
-	                                Creative Tim
+	                            <a href="http://brocpacholik.com">
+                                    Broc Pacholik
 	                            </a>
 	                        </li>
 	                        <li>
@@ -229,7 +251,7 @@
 	                    </ul>
 	                </nav>
 	                <div class="copyright pull-right">
-	                    &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="fa fa-heart heart"></i> by <a href="http://www.creative-tim.com">Creative Tim</a>
+	                    &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="fa fa-heart heart"></i> by <a href="http://brocpacholik.com">Broc Pacholik</a>
 	                </div>
 	            </div>
 	        </footer>

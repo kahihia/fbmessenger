@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Messenger</h4>
+	                                <p class="category">Send messages</p>
+	                            </div>
+	                            <div class="card-content">
+                                    {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                        <li class="{{ message.tags  }}">{{ message  }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <button type="submit" class="btn btn-fill btn-info ">Send</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+{% endblock %}

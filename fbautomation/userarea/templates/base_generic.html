@@ -99,6 +99,13 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
+                    {% url 'messenger' as messenger_url%}
+                    <li {% if request.get_full_path == messenger_url %} class="active" {% endif %}>
+                        <a href="{% url 'messenger' %}">
+	                        <i class="ti-email"></i>
+	                        <p>Messenger</p>
+	                    </a>
+	                </li>
                     {% url 'facebook_url_list' as profiles_url%}
                     <li {% if request.get_full_path == profiles_url %} class="active" {% endif %}>
                         <a href="{% url 'facebook_url_list' %}">

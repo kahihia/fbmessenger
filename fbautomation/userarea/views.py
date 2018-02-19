@@ -6,9 +6,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-# from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm
+from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
 from .models import Avatar, FacebookAccount, FacebookMessage, FacebookProfileUrl
 
 
@@ -226,7 +226,7 @@ def remove_fburl(request):
         return JsonResponse({"status": "You are not allowed to view this page."})
 
 
-class UpdateFacebookProfileUrl(generic.UpdateView):
+class UpdateFacebookProfileUrl(LoginRequiredMixin, generic.UpdateView):
     model = FacebookProfileUrl
     form_class = FacebookProfileForm
     template_name = "edit_profile_url.html"
@@ -235,7 +235,7 @@ class UpdateFacebookProfileUrl(generic.UpdateView):
         return reverse("facebook_url_list")
 
 
-class FacebookProfileUrlView(generic.ListView):
+class FacebookProfileUrlView(LoginRequiredMixin, generic.ListView):
     model = FacebookProfileUrl
     paginate_by = 10
     context_object_name = "urls"
@@ -246,3 +246,22 @@ class FacebookProfileUrlView(generic.ListView):
                                                      is_deleted=False)
         return queryset
 
+
+class MessengerView(LoginRequiredMixin, generic.FormView):
+
+    form_class = MessageForm
+    template_name = "messenger.html"
+
+
+    def form_valid(self, form):
+        response = super(MessengerView, self).form_valid(form)
+        recipients = form.cleaned_data["recipients"]
+        for recipient in recipients:
+            print(recipient.url)
+        count = len(recipients)
+        messages.success(self.request, f"Message sent to {count} recipients!")
+        return response
+
+
+    def get_success_url(self):
+        return reverse("messenger")

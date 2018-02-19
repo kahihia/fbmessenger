@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^update/fburl/(?P<pk>\d+)/$', views.UpdateFacebookProfileUrl.as_view(), name='update_fburl'),
     url(r"^facebookurls/$", views.FacebookProfileUrlView.as_view(), name="facebook_url_list"),
 
+    url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
+
 ]

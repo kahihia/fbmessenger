@@ -89,3 +89,15 @@ class UserAvatarForm(forms.ModelForm):
     class Meta:
         model = Avatar
         fields = ("image", )
+
+
+class MessageForm(forms.Form):
+    recipients = forms.ModelMultipleChoiceField(required=False, queryset=FacebookProfileUrl.objects.all(),
+                                                widget=forms.SelectMultiple(attrs={'class': 'form-control input-no-border selectpicker',
+                                                                                   'data-actions-box': 'true',
+                                                                                   'data-live-search': 'true',
+                                                                                   'data-size': '5',
+                                                                                   'title': 'Select recipients'}))
+    message = forms.CharField(label="Message", required=True,
+                              widget=forms.Textarea(attrs={"class": "form-control",
+                                                           "placeholder": "Enter message"}))

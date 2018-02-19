@@ -106,13 +106,6 @@
 	                        <p>Facebook Profiles</p>
 	                    </a>
 	                </li>
-                    {% url 'fbaccounts' as fbacc_url%}
-                    <li {% if request.get_full_path == fbacc_url %} class="active" {% endif %}>
-                        <a href="{% url 'fbaccounts' %}">
-	                        <i class="ti-facebook"></i>
-	                        <p>Facebook accounts</p>
-	                    </a>
-	                </li>
                     {% url 'profile' as profile_url%}
                     <li {% if request.get_full_path == profile_url %} class="active" {% endif %}>
                         <a href="{% url 'profile' %}">

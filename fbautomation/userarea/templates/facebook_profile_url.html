@@ -31,7 +31,7 @@
 	                                    <tbody>
                                             {% for profile_url in urls %}
 	                                        <tr>
-                                                <td class="text-center">{{ profile.id }}</td>
+                                                <td class="text-center">{{ profile_url.id }}</td>
                                                 <td>{{ profile_url.url }}</td>
 	                                            <td>{{ profile_url.created_on|date:"d/m/Y" }}</td>
 	                                            <td class="td-actions text-right">

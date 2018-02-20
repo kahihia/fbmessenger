@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
-from .models import Avatar, FacebookAccount, FacebookMessage, FacebookProfileUrl
+from .models import Avatar, FacebookAccount, FacebookProfileUrl
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -19,7 +19,8 @@ class CreateFacebookAccount(generic.CreateView):
 
 @login_required
 def facebook_accounts(request):
-    accounts = FacebookAccount.objects.filter(user=request.user, is_deleted=False)
+    accounts = FacebookAccount.objects.filter(user=request.user,
+                                              is_deleted=False)
     paginator = Paginator(accounts, 10)
     page = request.GET.get("page")
 
@@ -64,43 +65,72 @@ def signup(request):
 
 @login_required
 def profile(request):
-    if request.method == "POST":
-        password_form = PasswordChangeForm(request.user, request.POST)
+    # HELLLLLLLLLLLL HELLLLLLLLLL
+    avatar_form = UserAvatarForm()
+    password_form = PasswordChangeForm(request.user)
+    # print("Not post", password_form)
+    user_form = UserForm(initial={
+        "first_name": request.user.first_name,
+        "last_name": request.user.last_name,
+        "email": request.user.email,
+        "username": request.user.username
+    })
+    facebook_form = FacebookAccountForm(initial={"fb_user": request.user.facebookaccount})
+
+    if request.method == "POST" and "profile" in request.POST:
         user_form = UserForm(request.POST, instance=request.user)
         avatar_form = UserAvatarForm(request.POST, request.FILES)
-        if password_form.is_valid():
-            user = password_form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, "Your password was successfully updated!")
-        else:
-            messages.error(request, 'Please correct the error below.')
 
         if user_form.is_valid():
             user_form.save()
+        else:
+            messages.error(request, 'Please correct the error below.')
 
         if avatar_form.is_valid():
             if avatar_form.cleaned_data["image"]:
                 user_avatar = Avatar.objects.filter(user=request.user)[0]
                 user_avatar.image = avatar_form.cleaned_data["image"]
                 user_avatar.save()
-                messages.success(request, "Your avatar was successfully updated!")
+                messages.success(request,
+                                 "Your avatar was successfully updated!")
             user_form.save()
         else:
-            messages.error(request, 'Please correct the error below.')
-    else:
-        avatar_form = UserAvatarForm()
-        password_form = PasswordChangeForm(request.user)
-        # print("Not post", password_form)
-        user_form = UserForm(initial={
-            "first_name": request.user.first_name,
-            "last_name": request.user.last_name,
-            "email": request.user.email,
-            "username": request.user.username
-        })
+            messages.error(request, 'Profile Please correct the error below.')
 
-    return render(request, "profile.html", {"password_form": password_form,
-                                            "user_form": user_form,
-                                            "avatar_form": avatar_form})
+
+    if request.method == "POST" and "password" in request.POST:
+        password_form = PasswordChangeForm(request.user, request.POST)
+
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your password was successfully updated!")
+        else:
+            messages.error(request, 'Password Please correct the error below.')
+
+    if request.method == "POST" and "facebook" in request.POST:
+        instance = FacebookAccount.objects.filter(user=request.user)[0]
+        facebook_form = FacebookAccountForm(request.POST)
+        if facebook_form.is_valid():
+            if instance:
+                instance.fb_user = facebook_form.cleaned_data["fb_user"]
+                instance.fb_pass = facebook_form.cleaned_data["fb_pass"]
+                instance.save()
+                messages.success(request, "Facebook credentials updated!")
+            else:
+                facebook_form = facebook_form.save(commit=False)
+                facebook_form.user = request.user
+                facebook_form.save()
+                messages.success(request, "Facebook credentials saved!")
+        else:
+            messages.error(request, 'Facebook Please correct the error below.')
+
+
+
+    return render(request, "profiletest.html", {"password_form": password_form,
+                                                "user_form": user_form,
+                                                "avatar_form": avatar_form,
+                                                "facebook_form": facebook_form})
 
 @login_required
 def new_fbaccount(request):

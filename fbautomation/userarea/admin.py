@@ -5,7 +5,7 @@ from .models import FacebookAccount, FacebookMessage, FacebookProfileUrl, Avatar
 
 @admin.register(FacebookAccount)
 class FacebookAccountAdmin(admin.ModelAdmin):
-    list_display = ("id", "username", "created_on")
+    list_display = ("id", "fb_user", "created_on")
 
 
 @admin.register(FacebookMessage)

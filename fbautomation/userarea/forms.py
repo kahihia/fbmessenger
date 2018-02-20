@@ -33,10 +33,22 @@ class SignupForm(UserCreationForm):
 
 
 class UserForm(forms.ModelForm):
-    first_name = forms.CharField(label="First name", widget=forms.TextInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter first name'}), required=False)
-    last_name = forms.CharField(label="Last name", widget=forms.TextInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter lat name'}), required=False)
-    email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter email'}))
-    username = forms.CharField(label="Username", widget=forms.TextInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter username'}))
+    first_name = forms.CharField(label="First name", required=False,
+                                 widget=forms.TextInput(
+                                     attrs={'class': 'form-control border-input',
+                                            'placeholder': 'Enter first name'}))
+    last_name = forms.CharField(label="Last name", required=False,
+                                widget=forms.TextInput(
+                                    attrs={'class': 'form-control border-input',
+                                           'placeholder': 'Enter lat name'}))
+    email = forms.EmailField(label="Email",
+                             widget=forms.EmailInput(
+                                 attrs={'class': 'form-control border-input',
+                                        'placeholder': 'Enter email'}))
+    username = forms.CharField(label="Username",
+                               widget=forms.TextInput(
+                                   attrs={'class': 'form-control border-input',
+                                          'placeholder': 'Enter username'}))
 
     class Meta:
         model = User
@@ -44,20 +56,25 @@ class UserForm(forms.ModelForm):
 
 
 class FacebookAccountForm(forms.ModelForm):
-    username = forms.CharField(label="Username", widget=forms.TextInput(attrs={'class': 'form-control border-input', 'placeholder': 'Enter username'}))
-    password = forms.CharField(label="Current password",
-                               widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}), required=False)
+    fb_user = forms.CharField(label="Username", required=True,
+                           widget=forms.TextInput(
+                                   attrs={'class': 'form-control border-input',
+                                          'placeholder': 'Enter username'}))
+    fb_pass = forms.CharField(label="Current password",required=True,
+                               widget=forms.PasswordInput(
+                                   attrs={'class': 'form-control border-input'}))
 
     class Meta:
         model = FacebookAccount
-        fields = ("username", "password")
+        fields = ("fb_user", "fb_pass")
 
 
 class FacebookProfileForm(forms.ModelForm):
 
     url = forms.URLField(label="Url", required=True,
-                         widget=forms.URLInput(attrs={"class": "form-control broder-input",
-                                                      "placeholder": "Enter url: http://"}))
+                         widget=forms.URLInput(
+                             attrs={"class": "form-control broder-input",
+                                    "placeholder": "Enter url: http://"}))
 
     class Meta:
         model = FacebookProfileUrl
@@ -66,38 +83,44 @@ class FacebookProfileForm(forms.ModelForm):
 
 class BulkUrlform(forms.Form):
     url = forms.CharField(label="URLs", required=True,
-                          widget=forms.Textarea(attrs={"class": "form-control",
-                                                       "placeholder": "Input bulk URLs"}))
+                          widget=forms.Textarea(
+                              attrs={"class": "form-control",
+                                     "placeholder": "Input bulk URLs"}))
 
 
 class PasswordChangeForm(PasswordChangeForm):
 
-    old_password = forms.CharField(label="Current password",
-                                   widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}), required=False)
-    new_password1 = forms.CharField(label="New password",
-                                    widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}), required=False)
-    new_password2 = forms.CharField(label="Confirm password",
-                                    widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}), required=False)
+    old_password = forms.CharField(label="Current password", required=False,
+                                   widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}))
+    new_password1 = forms.CharField(label="New password", required=False,
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}))
+    new_password2 = forms.CharField(label="Confirm password", required=False,
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control border-input'}))
 
 
 class UserAvatarForm(forms.ModelForm):
 
     image = forms.FileField(label="Avatar", required=False,
-                            widget=forms.ClearableFileInput(attrs={'class': 'form-control border-input',
-                                                                   'multiple': False,
-                                                                   'accept': 'image/*'}))
+                            widget=forms.ClearableFileInput(
+                                attrs={'class': 'form-control border-input',
+                                       'multiple': False,
+                                       'accept': 'image/*'}))
     class Meta:
         model = Avatar
         fields = ("image", )
 
 
 class MessageForm(forms.Form):
-    recipients = forms.ModelMultipleChoiceField(required=False, queryset=FacebookProfileUrl.objects.all(),
-                                                widget=forms.SelectMultiple(attrs={'class': 'form-control input-no-border selectpicker',
-                                                                                   'data-actions-box': 'true',
-                                                                                   'data-live-search': 'true',
-                                                                                   'data-size': '5',
-                                                                                   'title': 'Select recipients'}))
+    recipients = forms.ModelMultipleChoiceField(required=True,
+                                                queryset=FacebookProfileUrl.objects.all(),
+                                                widget=forms.SelectMultiple(
+                                                    attrs={'class': 'form-control input-no-border selectpicker',
+                                                           'data-actions-box': 'true',
+                                                           'data-live-search': 'true',
+                                                           'data-size': '5',
+                                                           'title': 'Select recipients'}))
     message = forms.CharField(label="Message", required=True,
-                              widget=forms.Textarea(attrs={"class": "form-control",
-                                                           "placeholder": "Enter message"}))
+                              widget=forms.Textarea(
+                                  attrs={"class": "form-control",
+                                         "placeholder": "Enter message",
+                                         "rows": 12}))

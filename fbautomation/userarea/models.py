@@ -28,11 +28,16 @@ class FacebookProfileUrl(models.Model):
 
 class FacebookAccount(models.Model):
 
-    user = models.ForeignKey(User, blank=True, null=True,
-                             on_delete=models.SET_NULL)
+    # user = models.ForeignKey(User, blank=True, null=True,
+    #                          on_delete=models.SET_NULL)
 
-    username = models.CharField(max_length=250)
-    password = models.CharField(max_length=250)
+    user = models.OneToOneField(User, blank=True,
+                                null=True, on_delete=models.SET_NULL)
+
+    # username = models.CharField(max_length=250)
+    # password = models.CharField(max_length=250)
+    fb_user = models.CharField(max_length=250)
+    fb_pass = models.CharField(max_length=250)
 
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
@@ -43,7 +48,7 @@ class FacebookAccount(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        return "{}".format(self.username)
+        return "{}".format(self.fb_user)
 
 
 class FacebookMessage(models.Model):

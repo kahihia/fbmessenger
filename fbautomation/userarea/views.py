@@ -9,7 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
-from .models import Avatar, FacebookAccount, FacebookProfileUrl
+from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -43,9 +43,12 @@ def index(request):
     profile_urls = FacebookProfileUrl.objects.filter(user=request.user,
                                                      is_deleted=False).count()
 
+    stats = Stats.objects.filter(user=request.user)[0]
+
 
     return render(request, "dashboard.html", {"accounts": accounts,
-                                              "profile_urls": profile_urls})
+                                              "profile_urls": profile_urls,
+                                              "stats": stats})
 
 
 def signup(request):
@@ -290,6 +293,8 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
             print(recipient.url)
             recipient.is_messaged = True
             recipient.save()
+            self.request.user.stats.total_messages += 1
+            self.request.user.stats.save()
         count = len(recipients)
         messages.success(self.request, f"Message sent to {count} recipients!")
         return response

@@ -90,6 +90,8 @@ class Stats(models.Model):
     total_messages = models.IntegerField(default=0, null=True, blank=True)
     total_spent = models.FloatField(default=0, null=True, blank=True)
     total_urls = models.IntegerField(default=0, null=True, blank=True)
+    created_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
 
 
     class Meta:
@@ -106,3 +108,9 @@ class Pricing(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Avatar.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def create_user_stats(sender, instance, created, **kwargs):
+    if created:
+        Stats.objects.create(user=instance)

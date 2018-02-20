@@ -15,6 +15,7 @@ class FacebookProfileUrl(models.Model):
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
     url = models.URLField(max_length=500, null=True, blank=True)
+    is_messaged = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
@@ -80,6 +81,25 @@ class Avatar(models.Model):
 
     def __str__(self):
         return "/media/{}".format(self.image)
+
+
+class Stats(models.Model):
+
+    user = models.OneToOneField(User, blank=True,
+                                null=True, on_delete=models.SET_NULL)
+    total_messages = models.IntegerField(default=0, null=True, blank=True)
+    total_spent = models.FloatField(default=0, null=True, blank=True)
+    total_urls = models.IntegerField(default=0, null=True, blank=True)
+
+
+    class Meta:
+        ordering = ["-id"]
+
+
+
+class Pricing(models.Model):
+    price = models.FloatField()
+
 
 
 @receiver(post_save, sender=User)

@@ -288,6 +288,8 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         recipients = form.cleaned_data["recipients"]
         for recipient in recipients:
             print(recipient.url)
+            recipient.is_messaged = True
+            recipient.save()
         count = len(recipients)
         messages.success(self.request, f"Message sent to {count} recipients!")
         return response

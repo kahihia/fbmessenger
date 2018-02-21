@@ -70,6 +70,10 @@ class FacebookAccountForm(forms.ModelForm):
 
 
 class FacebookProfileForm(forms.ModelForm):
+    tag = forms.CharField(label="Tag", required=True,
+                           widget=forms.TextInput(
+                                   attrs={'class': 'form-control border-input',
+                                          'placeholder': 'Enter tag'}))
 
     url = forms.URLField(label="Url", required=True,
                          widget=forms.URLInput(
@@ -78,10 +82,14 @@ class FacebookProfileForm(forms.ModelForm):
 
     class Meta:
         model = FacebookProfileUrl
-        fields = ("url",)
+        fields = ("tag", "url",)
 
 
 class BulkUrlform(forms.Form):
+    tag = forms.CharField(label="Tag", required=True,
+                           widget=forms.TextInput(
+                                   attrs={'class': 'form-control border-input',
+                                          'placeholder': 'Enter tag'}))
     url = forms.CharField(label="URLs", required=True,
                           widget=forms.Textarea(
                               attrs={"class": "form-control",
@@ -111,6 +119,13 @@ class UserAvatarForm(forms.ModelForm):
 
 
 class MessageForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        # request is a required parameter for this form.
+        super(MessageForm, self).__init__(*args, **kwargs)
+        self.fields["recipients"].queryset = FacebookProfileUrl.objects.filter(user=user,
+                                                                               is_messaged=False,
+                                                                               is_deleted=False)
+
     recipients = forms.ModelMultipleChoiceField(required=True,
                                                 queryset=FacebookProfileUrl.objects.all(),
                                                 widget=forms.SelectMultiple(

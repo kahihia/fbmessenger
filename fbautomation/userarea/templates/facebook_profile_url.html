@@ -24,6 +24,7 @@
 	                                        <tr>
 	                                            <th class="text-center">#</th>
 	                                            <th>Url</th>
+	                                            <th>Tag</th>
 	                                            <th>Messaged</th>
 	                                            <th>Created on</th>
 	                                            <th class="text-right">Actions</th>
@@ -34,7 +35,13 @@
 	                                        <tr>
                                                 <td class="text-center">{{ profile_url.id }}</td>
                                                 <td>{{ profile_url.url }}</td>
-                                                <td>{% if profile_url.is_messaged %}<i style="color:green" class="fa fa-check-circle"></i>{% endif %}
+                                                <td>{{ profile_url.tag }}</td>
+                                                <td>{% if profile_url.is_messaged %}
+                                                        <i style="color:green" class="fa fa-check-square"></i>
+                                                    {% else %}
+                                                        <i class="fa fa-square-o"></i>
+
+                                                    {% endif %}
                                                 </td>
 	                                            <td>{{ profile_url.created_on|date:"d/m/Y" }}</td>
 	                                            <td class="td-actions text-right">

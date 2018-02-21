@@ -8,8 +8,11 @@ from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
+from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
+    FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats
+
+from .fbmessenger import Messenger
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -215,8 +218,10 @@ def new_fburl(request):
         if form.is_valid():
             try:
                 urls = form.cleaned_data.get("url").split()
+                tag = form.cleaned_data.get("tag")
                 for url in urls:
-                    url_form = FacebookProfileForm({"url": url})
+                    url_form = FacebookProfileForm({"url": url,
+                                                    "tag": tag})
                     if url_form.is_valid():
                         url_form = url_form.save(commit=False)
                         url_form.user = request.user
@@ -289,15 +294,35 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
     def form_valid(self, form):
         response = super(MessengerView, self).form_valid(form)
         recipients = form.cleaned_data["recipients"]
+        print(form.cleaned_data["message"])
+        messenger = Messenger(self.request.user.facebookaccount.fb_user,
+                              self.request.user.facebookaccount.fb_pass,
+                              form.cleaned_data["message"])
         for recipient in recipients:
             print(recipient.url)
             recipient.is_messaged = True
             recipient.save()
+            message_url = messenger.get_message_url(recipient.url)
+            messenger.send(message_url)
             self.request.user.stats.total_messages += 1
             self.request.user.stats.save()
         count = len(recipients)
+        messenger.close()
         messages.success(self.request, f"Message sent to {count} recipients!")
         return response
+
+    def get_form_kwargs(self):
+        """This method is what injects forms with their keyword arguments."""
+        # grab the current set of form #kwargs
+        kwargs = super(MessengerView, self).get_form_kwargs()
+        # Update the kwargs with
+        # the user_id
+        kwargs['user'] = self.request.user.pk
+        return kwargs
+
+
+
+
 
 
     def get_success_url(self):

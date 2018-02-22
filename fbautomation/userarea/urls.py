@@ -10,6 +10,10 @@ urlpatterns = [
     url(r'^ajax/messaged/$', views.messaged_count, name='messaged_count'),
 
 
+    url(r'^testing/$', views.testing_table, name='testing_table'),
+    url(r'^testingdata/$', views.testing_data, name='testing_data'),
+
+
     # Facebook account user
     # url(r'^fbaccounts/$', views.facebook_accounts, name='fbaccounts'),
     # url(r'^create/fbaccount/$', views.CreateFacebookAccount.as_view(), name='create_fbaccount'),

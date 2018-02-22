@@ -321,9 +321,9 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
             messenger.send(message_url)
             self.request.user.stats.total_messages += 1
             self.request.user.stats.save()
-        count = len(recipients)
         messenger.close()
-        messages.success(self.request, f"Message sent to {count} recipients!")
+        # count = len(recipients)
+        # messages.success(self.request, f"Message sent to {count} recipients!")
         json_response = {"status": True}
         return JsonResponse(json_response)
 
@@ -347,3 +347,23 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
 
     def get_success_url(self):
         return reverse("messenger")
+
+
+def testing_table(request):
+    return render(request, "testing_table.html")
+
+def testing_data(request):
+    print(request)
+    data = {
+        "total": 200,
+        "rows": [
+            {
+                "id": 1,
+                "tag": "gamarj",
+                "url": "facebook.com/avoee",
+                "messaged": True,
+                "created": "2018"
+            }
+        ]
+    }
+    return JsonResponse(data)

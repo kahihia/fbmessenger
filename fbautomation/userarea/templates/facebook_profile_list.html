@@ -1,0 +1,62 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Facebook Profile URLs</h4>
+	                                <p class="category">Add/Modify/Remove</p>
+	                            </div>
+	                            <div class="card-content table-responsive table-full-width">
+
+
+
+
+
+
+
+
+<div class="toolbar">
+    <!--Here you can write extra buttons/actions for the toolbar-->
+                                    <div class="">
+                                        {% csrf_token %}
+                                        <a href="{% url 'create_fburl' %}" class="btn btn-wd btn-info btn-fill">
+                                            <span class="btn-label">
+                                                <i class="ti-plus"></i>
+                                            </span> Add new </a>
+
+                                    </div>
+</div>
+<table id="bootstrap-table" class="table">
+    <thead>
+        <th data-field="state" data-checkbox="true"></th>
+        <th data-field="id" data-sortable="true" class="text-center">ID</th>
+    	<th data-field="url" data-sortable="true">Url</th>
+    	<th data-field="tag" data-sortable="true">Tag</th>
+    	<th data-field="messaged" data-sortable="true">Messaged</th>
+    	<th data-field="created" data-sortable="true">Created on</th>
+    	<th data-field="actions" class="td-actions text-right" data-events="operateEvents" data-formatter="operateFormatter">Actions</th>
+    </thead>
+</table>
+
+<!-- the javascript for the datatables -->
+
+
+
+
+	                            </div>
+                                <div class="card-footer text-right">
+
+
+                                </div>
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+{% endblock %}

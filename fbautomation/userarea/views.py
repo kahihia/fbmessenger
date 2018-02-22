@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
+from django.db.models import Q
 
 from django.core.cache import cache
 
@@ -276,16 +277,8 @@ class UpdateFacebookProfileUrl(LoginRequiredMixin, generic.UpdateView):
         return reverse("facebook_url_list")
 
 
-class FacebookProfileUrlView(LoginRequiredMixin, generic.ListView):
-    model = FacebookProfileUrl
-    paginate_by = 10
-    context_object_name = "urls"
-    template_name = "facebook_profile_url.html"
-
-    def get_queryset(self):
-        queryset = FacebookProfileUrl.objects.filter(user=self.request.user,
-                                                     is_deleted=False)
-        return queryset
+class FacebookProfileUrlView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "facebook_profile_list.html"
 
 
 @login_required
@@ -349,21 +342,50 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         return reverse("messenger")
 
 
-def testing_table(request):
-    return render(request, "testing_table.html")
+def ajax_profile(request):
 
-def testing_data(request):
-    print(request)
+    search = request.GET.get("search")
+    sort = request.GET.get("sort", "id")
+    order_type = request.GET.get("order", "desc")
+    limit = request.GET.get("limit")
+    offset = request.GET.get("offset")
+
+    page = (int(offset) / int(limit)) + 1
+
+    profiles = FacebookProfileUrl.objects.filter(user=request.user,
+                                                 is_deleted=False)
+    profile_count = profiles.count()
+
+    if search:
+        profiles = profiles.filter(Q(url__contains=search) | Q(tag__contains=search))
+
+    if order_type == 'asc':
+        profiles = profiles.order_by(sort)
+    else:
+        profiles = profiles.order_by('-' + sort)
+
+    paginator = Paginator(profiles, limit)
+
+    try:
+        profiles = paginator.page(page)
+    except PageNotAnInteger:
+        profiles = paginator.page(1)
+    except EmptyPage:
+        profiles = paginator.page(paginator.num_pages)
+
+
+    rows = [
+        {
+            "id": profile.id,
+            "tag": profile.tag,
+            "url": profile.url,
+            "messaged": profile.is_messaged,
+            "created": profile.created_on
+        } for profile in profiles
+    ]
+
     data = {
-        "total": 200,
-        "rows": [
-            {
-                "id": 1,
-                "tag": "gamarj",
-                "url": "facebook.com/avoee",
-                "messaged": True,
-                "created": "2018"
-            }
-        ]
+        "total": profile_count,
+        "rows": rows
     }
     return JsonResponse(data)

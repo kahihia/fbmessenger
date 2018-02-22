@@ -22,7 +22,7 @@ class FacebookProfileUrl(models.Model):
                                       null=True, blank=True)
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ["id"]
 
     def __str__(self):
         return "{} - {}".format(self.tag, self.url)

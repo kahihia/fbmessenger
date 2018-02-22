@@ -180,7 +180,8 @@ $( document  ).ready(function() {
                                 confirmButtonClass: "btn btn-success btn-fill",
                                 buttonsStyling: false
                                 }).then(function(result){
-                                  location.reload();
+                                  // location.reload();
+                                  $table.bootstrapTable('refresh');
                               })
     }
 
@@ -320,38 +321,38 @@ $( document  ).ready(function() {
 
 // tables
         window.operateEvents = {
-            'click .view': function (e, value, row, index) {
-                info = JSON.stringify(row);
-
-                swal('You click view icon, row: ', info);
-                console.log(info);
-            },
             'click .edit': function (e, value, row, index) {
-                info = JSON.stringify(row);
-
-                swal('You click edit icon, row: ', info);
-                console.log(info);
+                window.location.replace("/update/fburl/"+ row.id +"")
             },
             'click .remove': function (e, value, row, index) {
-                console.log(row);
-                $table.bootstrapTable('remove', {
-                    field: 'id',
-                    values: [row.id]
-                });
+                console.log(row.id);
+                app.show_swal('remove-url', row.id);
+                // $table.bootstrapTable('remove', {
+                //     field: 'id',
+                //     values: [row.id]
+                // });
             }
         };
     });
 
+function messagedFormatter(value, row, index){
+    console.log(row);
+    if(row.is_messaged == true){
+        mark = '<div class=""><i style="color:green" class="fa fa-check-square"></i></div>'
+    }else{
+
+        mark = '<div class=""> <i class="fa fa-square-o"></i></div>'
+    }
+    return mark
+
+}
     function operateFormatter(value, row, index) {
         return [
-            '<a rel="tooltip" title="View" class="btn btn-simple btn-info btn-icon table-action view" href="javascript:void(0)">',
-                '<i class="fa fa-image"></i>',
-            '</a>',
             '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
-                '<i class="fa fa-edit"></i>',
+                '<i class="ti-pencil-alt"></i>',
             '</a>',
             '<a rel="tooltip" title="Remove" class="btn btn-simple btn-danger btn-icon table-action remove" href="javascript:void(0)">',
-                '<i class="fa fa-remove"></i>',
+                '<i class="ti-close"></i>',
             '</a>'
         ].join('');
     }

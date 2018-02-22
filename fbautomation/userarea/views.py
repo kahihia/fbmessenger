@@ -12,6 +12,8 @@ from django.db.models import Q
 
 from django.core.cache import cache
 
+from django.template.defaultfilters import date as filter_date
+
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats
@@ -379,8 +381,8 @@ def ajax_profile(request):
             "id": profile.id,
             "tag": profile.tag,
             "url": profile.url,
-            "messaged": profile.is_messaged,
-            "created": profile.created_on
+            "is_messaged": profile.is_messaged,
+            "created_on": filter_date(profile.created_on, "d/m/Y")
         } for profile in profiles
     ]
 

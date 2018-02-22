@@ -1,4 +1,71 @@
 $( document  ).ready(function() {
+
+    function  send_message_callback(response){
+        if (response.status === true){
+
+            title = 'Sent!'
+            type = 'success',
+            text = 'Messages are sent...'
+        } else {
+            title = 'Not deleted!'
+            type = 'warning',
+            text = 'Your account adcould not been deleted.'
+
+        }
+        clearInterval(check_interval);
+
+          swal({
+            title: title,
+            text: text,
+            type: type,
+            confirmButtonClass: "btn btn-success btn-fill",
+            buttonsStyling: false
+            }).then(function(result){
+              window.location.replace("/facebookurls/");
+          })
+    }
+
+    function  sending_message_callback(response){
+
+                title = 'Sending...'
+                type = 'info',
+            // text = 'Messages are sending...'
+                    html =
+                        '<p><i class="fa fa-spinner fa-spin" style="font-size:60px"></i> </p>' +
+                        '<p>Message is sending...' +
+                        '<p>Sent <b id="id_count">0</b> out of '+ $("#id_recipients :selected").length +'<p>';
+                  swal({
+                    title: title,
+                    // text: text,
+                    html: html,
+                    // type: type,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
+
+                    }).then(function(result){
+                      location.reload();
+                  })
+    }
+
+    function check_sent_status(){
+        $.getJSON("/ajax/messaged/", function(response){
+            $("#id_count").html(response.count);
+        });
+    }
+
+    function send_message(before_callback, success_callback){
+            $.ajax({
+                url: "/create/messenger/",
+                method: "POST",
+                data: $("#id_messenger_form").serialize(),
+                dataType: "json",
+                beforeSend: before_callback,
+                success: success_callback
+
+            });
+    }
+
     function  new_account_callback(response){
         if (response.success === true){
 
@@ -118,7 +185,6 @@ $( document  ).ready(function() {
     }
 
     function remove_url(id, callback){
-        console.log(id);
         if (id){
             $.ajax({
                 url: "/ajax/remove/fburl/",
@@ -132,7 +198,6 @@ $( document  ).ready(function() {
     }
 
     function remove_account(id, callback){
-        console.log(id);
         if (id){
             $.ajax({
                 url: "/ajax/remove/fbaccount/",
@@ -210,7 +275,6 @@ $( document  ).ready(function() {
                     }).catch(swal.noop)
                 });
             } else if(type == "remove-url"){
-                console.log("Hey");
                         swal({
                                 title: 'Are you sure?',
                                 text: 'You will not be able to recover this URL!',
@@ -226,13 +290,29 @@ $( document  ).ready(function() {
                                    remove_url(data, remove_url_callback);
                             });
 
-            } // end if
+            } else if(type == "messenger"){
+                if ($("#id_messenger_form").valid()){
+                        swal({
+                                title: 'Are you sure?',
+                                text: 'Message will be sent to recipients!',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, send it!',
+                                cancelButtonText: 'No',
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                cancelButtonClass: "btn btn-danger btn-fill",
+                                buttonsStyling: false
+                            }).then(function(result) {
+
+                                   send_message(sending_message_callback, send_message_callback);
+                                   check_interval = setInterval(check_sent_status, 1000);
+
+                            });
+                }
+
+            }// end if
     } // end show_swal
 
     } // end of app.
-
-
-
-
 
 });

@@ -18,10 +18,10 @@
                                         {% endfor %}
                                     </ul>
                                     {% endif %}
-                                    <form action="" method="post">
+                                    <form id="id_messenger_form" action="" method="post">
                                         {% csrf_token %}
                                         {{ form.as_p }}
-                                        <button type="submit" class="btn btn-fill btn-info ">Send</button>
+                                        <button type="button" onclick="app.show_swal('messenger')" class="btn btn-fill btn-info ">Send</button>
                                     </form>
 
                                 </div>

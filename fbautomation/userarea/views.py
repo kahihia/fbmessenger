@@ -8,6 +8,9 @@ from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
+
+from django.core.cache import cache
+
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats
@@ -285,6 +288,18 @@ class FacebookProfileUrlView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
+@login_required
+def messaged_count(request):
+
+    count = cache.get(request.user.pk)
+    if not count:
+        count = False
+
+    count = {"count": count}
+
+    return JsonResponse(count)
+
+
 class MessengerView(LoginRequiredMixin, generic.FormView):
 
     form_class = MessageForm
@@ -292,14 +307,14 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
 
 
     def form_valid(self, form):
-        response = super(MessengerView, self).form_valid(form)
+        super(MessengerView, self).form_valid(form)
         recipients = form.cleaned_data["recipients"]
         print(form.cleaned_data["message"])
         messenger = Messenger(self.request.user.facebookaccount.fb_user,
                               self.request.user.facebookaccount.fb_pass,
                               form.cleaned_data["message"])
-        for recipient in recipients:
-            print(recipient.url)
+        for count, recipient in enumerate(recipients):
+            cache.set(self.request.user.pk, count+1)
             recipient.is_messaged = True
             recipient.save()
             message_url = messenger.get_message_url(recipient.url)
@@ -309,7 +324,17 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         count = len(recipients)
         messenger.close()
         messages.success(self.request, f"Message sent to {count} recipients!")
-        return response
+        json_response = {"status": True}
+        return JsonResponse(json_response)
+
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
 
     def get_form_kwargs(self):
         """This method is what injects forms with their keyword arguments."""
@@ -319,11 +344,6 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         # the user_id
         kwargs['user'] = self.request.user.pk
         return kwargs
-
-
-
-
-
 
     def get_success_url(self):
         return reverse("messenger")

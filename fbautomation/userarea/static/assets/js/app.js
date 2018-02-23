@@ -1,5 +1,28 @@
 $( document  ).ready(function() {
 
+
+
+    function check_progress(){
+        $.getJSON("/ajax/progress/", function(response){
+            var progress = $("#id_progress");
+            if(response.done){
+                clearInterval(progress_interval);
+                progress.html('<a href="#messageprogress" class="dropdown-toggle btn-magnify" data-toggle="dropdown">' +
+	                                '<i class="fa fa-send"></i> ' +
+									'<p> Last sent messages '+ response.total +'</p>'+
+	                            '</a>');
+            }else{
+                progress.html('<a href="#messageprogress" class="dropdown-toggle btn-magnify" data-toggle="dropdown">' +
+	                                '<i class="fa fa-spinner fa-spin"></i> '+
+	                                '<!-- <i class="fa fa-send"></i> -->' +
+									'<p>'+ response.sent +' sent out of '+ response.total +'</p>'+
+	                            '</a>');
+
+            }
+        });
+    }
+    progress_interval = setInterval(check_progress, 1000);
+
     function  send_message_callback(response){
         if (response.status === true){
 
@@ -33,15 +56,19 @@ $( document  ).ready(function() {
                     html =
                         '<p><i class="fa fa-spinner fa-spin" style="font-size:60px"></i> </p>' +
                         '<p>Message is sending...' +
-                        '<p>Sent <b id="id_count">0</b> out of '+ $("#id_recipients :selected").length +'<p>';
+                        '<p>Sent <b id="id_count">0</b> out of <b id="id_total">'+ $("#id_recipients :selected").length +'</b><p>';
+
                   swal({
                     title: title,
                     // text: text,
                     html: html,
                     // type: type,
                     showCancelButton: false,
-                    showConfirmButton: false,
-                    allowOutsideClick: false
+                    showConfirmButton: true,
+                    allowOutsideClick: true,
+                    confirmButtonClass: 'btn btn-success btn-fill',
+                    buttonsStyling: false,
+                    confirmButtonText: 'Minimize',
 
                     }).then(function(result){
                       location.reload();
@@ -49,8 +76,9 @@ $( document  ).ready(function() {
     }
 
     function check_sent_status(){
-        $.getJSON("/ajax/messaged/", function(response){
-            $("#id_count").html(response.count);
+        $.getJSON("/ajax/progress/", function(response){
+            $("#id_count").html(response.sent);
+            $("#id_total").html(response.total);
         });
     }
 
@@ -307,6 +335,7 @@ $( document  ).ready(function() {
 
                                    send_message(sending_message_callback, send_message_callback);
                                    check_interval = setInterval(check_sent_status, 1000);
+                                   progress_interval = setInterval(check_progress, 1000);
 
                             });
                 }

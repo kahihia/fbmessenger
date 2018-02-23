@@ -104,6 +104,31 @@ class Pricing(models.Model):
     price = models.FloatField()
 
 
+class MessageProgress(models.Model):
+
+    user = models.OneToOneField(User, blank=True,
+                                null=True, on_delete=models.SET_NULL)
+    sent = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+    done = models.BooleanField(default=False)
+
+    created_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
+
+    def __str__(self):
+        return "Sent {} out of {}".format(self.sent, self.total)
+
+    def jsonify(self):
+        data = {
+            "user": self.user.id,
+            "sent": self.sent,
+            "total": self.total,
+            "done": self.done,
+            "created_on": self.created_on
+        }
+        return data
+
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -115,3 +140,9 @@ def create_user_profile(sender, instance, created, **kwargs):
 def create_user_stats(sender, instance, created, **kwargs):
     if created:
         Stats.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def create_message_progress(sender, instance, created, **kwargs):
+    if created:
+        MessageProgress.objects.create(user=instance)

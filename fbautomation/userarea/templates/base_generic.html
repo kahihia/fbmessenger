@@ -109,7 +109,7 @@
                     {% url 'facebook_url_list' as profiles_url%}
                     <li {% if request.get_full_path == profiles_url %} class="active" {% endif %}>
                         <a href="{% url 'facebook_url_list' %}">
-	                        <i class="ti-user"></i>
+	                        <i class="fa fa-address-book-o"></i>
 	                        <p>Facebook Profiles</p>
 	                    </a>
 	                </li>
@@ -180,6 +180,9 @@
 	    					</div>
 	    				</form>
 	                    <ul class="nav navbar-nav navbar-right">
+	                        <li id="id_progress">
+                                <!-- progress -->
+	                        </li>
 	                        <li>
 	                            <a href="#stats" class="dropdown-toggle btn-magnify" data-toggle="dropdown">
 	                                <i class="ti-panel"></i>

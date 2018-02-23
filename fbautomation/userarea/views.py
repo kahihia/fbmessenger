@@ -16,7 +16,9 @@ from django.template.defaultfilters import date as filter_date
 
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
-from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats
+
+from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
+    MessageProgress
 
 from .fbmessenger import Messenger
 
@@ -304,18 +306,41 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         super(MessengerView, self).form_valid(form)
         recipients = form.cleaned_data["recipients"]
         print(form.cleaned_data["message"])
-        messenger = Messenger(self.request.user.facebookaccount.fb_user,
-                              self.request.user.facebookaccount.fb_pass,
-                              form.cleaned_data["message"])
+        # messenger = Messenger(self.request.user.facebookaccount.fb_user,
+        #                       self.request.user.facebookaccount.fb_pass,
+        #                       form.cleaned_data["message"])
+
+        progress = MessageProgress.objects.filter(user=self.request.user)[0]
+
+        count_recipients = len(recipients)
+
+        if progress.done:
+            progress.total = count_recipients
+            progress.sent = 0
+            progress.done = False
+        else:
+            progress.total += count_recipients
+        progress.save()
+
+
+        import time
         for count, recipient in enumerate(recipients):
             cache.set(self.request.user.pk, count+1)
-            recipient.is_messaged = True
-            recipient.save()
-            message_url = messenger.get_message_url(recipient.url)
-            messenger.send(message_url)
+            progress.sent += 1
+            # recipient.is_messaged = True
+            # recipient.save()
+            # message_url = messenger.get_message_url(recipient.url)
+            # messenger.send(message_url)
+            print(progress.total)
+            progress.save()
+            print(progress)
             self.request.user.stats.total_messages += 1
             self.request.user.stats.save()
-        messenger.close()
+            time.sleep(10)
+
+        progress.done = True
+        progress.save()
+        # messenger.close()
         # count = len(recipients)
         # messages.success(self.request, f"Message sent to {count} recipients!")
         json_response = {"status": True}
@@ -391,3 +416,11 @@ def ajax_profile(request):
         "rows": rows
     }
     return JsonResponse(data)
+
+@login_required()
+def ajax_progress(request):
+
+    progress = MessageProgress.objects.filter(user=request.user)[0]
+    # print(progress)
+
+    return JsonResponse(progress.jsonify())

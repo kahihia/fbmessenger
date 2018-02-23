@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^ajax/messaged/$', views.messaged_count, name='messaged_count'),
     url(r'^ajax/profile/$', views.ajax_profile, name='ajax_profile'),
+    url(r'^ajax/progress/$', views.ajax_progress, name='ajax_progress'),
 
 
     # Facebook account user

@@ -41,7 +41,6 @@ def facebook_accounts(request):
         accounts = paginator.page(paginator.num_pages)
 
 
-    print(accounts)
     return render(request, "facebook_accounts.html", {"accounts": accounts})
 
 
@@ -344,6 +343,7 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         return reverse("messenger")
 
 
+@login_required
 def ajax_profile(request):
 
     search = request.GET.get("search")

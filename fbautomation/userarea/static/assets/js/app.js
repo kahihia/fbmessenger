@@ -4,21 +4,28 @@ $( document  ).ready(function() {
 
     function check_progress(){
         $.getJSON("/ajax/progress/", function(response){
-            var progress = $("#id_progress");
-            if(response.done){
-                clearInterval(progress_interval);
-                progress.html('<a href="#messageprogress" class="dropdown-toggle btn-magnify" data-toggle="dropdown">' +
-	                                '<i class="fa fa-send"></i> ' +
-									'<p> Last sent messages '+ response.total +'</p>'+
-	                            '</a>');
+            // console.log(response);
+            check_response = $.isEmptyObject(response);
+            console.log(check_response);
+            html_string = '';
+            obj_count = 0;
+            if (check_response == false){
+                $.each(response, function(index, value){
+                    html_string += '<li><a href="#task'+ value.id +'">'+
+                        '<i class="fa fa-spinner fa-spin"></i>'+
+                        ' '+ value.name + '. Sent ' + value.sent + ' out of ' + value.total +'. '+
+                        '</a></li>';
+                    obj_count += 1;
+                });
             }else{
-                progress.html('<a href="#messageprogress" class="dropdown-toggle btn-magnify" data-toggle="dropdown">' +
-	                                '<i class="fa fa-spinner fa-spin"></i> '+
-	                                '<!-- <i class="fa fa-send"></i> -->' +
-									'<p>'+ response.sent +' sent out of '+ response.total +'</p>'+
-	                            '</a>');
-
+                html_string += '<li><a href="#done">'+
+                    '<i class="fa fa-check"></i>'+
+                    ' No running tasks.</a></li>';
             }
+            var progress = $("#id_task_menu");
+            var task_count = $("#task_count");
+            progress.html(html_string);
+            task_count.html(obj_count);
         });
     }
     progress_interval = setInterval(check_progress, 1000);

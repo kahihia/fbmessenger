@@ -20,7 +20,6 @@ from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
     TaskProgress
 
-from .fbmessenger import Messenger
 from .tasks import send_message
 
 
@@ -413,6 +412,7 @@ def ajax_progress(request):
 
 @login_required()
 def ajax_progress_last(request):
+    #TODO TaskProgress matching query does not exist.
 
     task = TaskProgress.objects.filter(user=request.user,
                                        done=False).latest("id")

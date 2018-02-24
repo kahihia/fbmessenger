@@ -125,6 +125,12 @@ class MessageForm(forms.Form):
         self.fields["recipients"].queryset = FacebookProfileUrl.objects.filter(user=user,
                                                                                is_messaged=False,
                                                                                is_deleted=False)
+    task_name = forms.CharField(label="Task name",
+                                widget=forms.TextInput(
+                                    attrs={
+                                        "class": "form-control",
+                                        "placeholde": "Enter task name",
+                                    }))
 
     recipients = forms.ModelMultipleChoiceField(required=True,
                                                 queryset=FacebookProfileUrl.objects.all(),
@@ -139,3 +145,18 @@ class MessageForm(forms.Form):
                                   attrs={"class": "form-control",
                                          "placeholder": "Enter message",
                                          "rows": 12}))
+
+
+
+
+
+from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+class GenerateRandomUserForm(forms.Form):
+    total = forms.IntegerField(
+        validators=[
+            MinValueValidator(50),
+            MaxValueValidator(500)
+        ]
+    )

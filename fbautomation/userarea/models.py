@@ -38,8 +38,8 @@ class FacebookAccount(models.Model):
 
     # username = models.CharField(max_length=250)
     # password = models.CharField(max_length=250)
-    fb_user = models.CharField(max_length=250)
-    fb_pass = models.CharField(max_length=250)
+    fb_user = models.CharField(max_length=250, blank=True, null=True)
+    fb_pass = models.CharField(max_length=250, blank=True, null=True)
 
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
@@ -104,10 +104,11 @@ class Pricing(models.Model):
     price = models.FloatField()
 
 
-class MessageProgress(models.Model):
+class TaskProgress(models.Model):
 
-    user = models.OneToOneField(User, blank=True,
-                                null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, blank=True, null=True,
+                             on_delete=models.SET_NULL)
+    name = models.CharField(max_length=250, null=True, blank=True)
     sent = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
     done = models.BooleanField(default=False)
@@ -115,18 +116,30 @@ class MessageProgress(models.Model):
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
 
+
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self):
         return "Sent {} out of {}".format(self.sent, self.total)
 
     def jsonify(self):
         data = {
+            "id": self.id,
             "user": self.user.id,
+            "name": self.name,
             "sent": self.sent,
             "total": self.total,
             "done": self.done,
             "created_on": self.created_on
         }
         return data
+
+
+class GlobalSetting(models.Model):
+    max_messages_day = models.IntegerField(default=50)
+
+
 
 
 
@@ -142,7 +155,13 @@ def create_user_stats(sender, instance, created, **kwargs):
         Stats.objects.create(user=instance)
 
 
+# @receiver(post_save, sender=User)
+# def create_message_progress(sender, instance, created, **kwargs):
+#     if created:
+#         TaskProgress.objects.create(user=instance)
+
+
 @receiver(post_save, sender=User)
-def create_message_progress(sender, instance, created, **kwargs):
+def create_facebook_account(sender, instance, created, **kwargs):
     if created:
-        MessageProgress.objects.create(user=instance)
+        FacebookAccount.objects.create(user=instance)

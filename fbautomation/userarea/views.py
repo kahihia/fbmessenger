@@ -18,9 +18,10 @@ from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
 
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
-    MessageProgress
+    TaskProgress
 
 from .fbmessenger import Messenger
+from .tasks import send_message
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -306,43 +307,18 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         super(MessengerView, self).form_valid(form)
         recipients = form.cleaned_data["recipients"]
         print(form.cleaned_data["message"])
-        # messenger = Messenger(self.request.user.facebookaccount.fb_user,
-        #                       self.request.user.facebookaccount.fb_pass,
-        #                       form.cleaned_data["message"])
 
-        progress = MessageProgress.objects.filter(user=self.request.user)[0]
+        recipients = [recipient.pk for recipient in recipients]
+        task = TaskProgress(
+            user=self.request.user,
+            name=form.cleaned_data.get("task_name"),
+            total=len(recipients)
+        )
+        task.save()
 
-        count_recipients = len(recipients)
+        send_message.delay(self.request.user.pk,
+                           recipients, form.cleaned_data["message"], task.id)
 
-        if progress.done:
-            progress.total = count_recipients
-            progress.sent = 0
-            progress.done = False
-        else:
-            progress.total += count_recipients
-        progress.save()
-
-
-        import time
-        for count, recipient in enumerate(recipients):
-            cache.set(self.request.user.pk, count+1)
-            progress.sent += 1
-            # recipient.is_messaged = True
-            # recipient.save()
-            # message_url = messenger.get_message_url(recipient.url)
-            # messenger.send(message_url)
-            print(progress.total)
-            progress.save()
-            print(progress)
-            self.request.user.stats.total_messages += 1
-            self.request.user.stats.save()
-            time.sleep(10)
-
-        progress.done = True
-        progress.save()
-        # messenger.close()
-        # count = len(recipients)
-        # messages.success(self.request, f"Message sent to {count} recipients!")
         json_response = {"status": True}
         return JsonResponse(json_response)
 
@@ -417,10 +393,43 @@ def ajax_profile(request):
     }
     return JsonResponse(data)
 
+
 @login_required()
 def ajax_progress(request):
+    #TODO list to json check working station.
+    #TODO need to change front side.
+    #TODO maybe done. Front needs to changed.
 
-    progress = MessageProgress.objects.filter(user=request.user)[0]
+    tasks = TaskProgress.objects.filter(user=request.user,
+                                           done=False)
     # print(progress)
+    progress = {task.id: task.jsonify() for task in tasks}
+    print("===================================")
+    print(progress)
+    print("---------------------------------")
 
-    return JsonResponse(progress.jsonify())
+    return JsonResponse(progress)
+
+
+@login_required()
+def ajax_progress_last(request):
+
+    task = TaskProgress.objects.filter(user=request.user,
+                                       done=False).latest("id")
+
+    return JsonResponse(task.jsonify())
+
+
+from .forms import GenerateRandomUserForm
+from .tasks import create_random_user_accounts
+from django.views.generic.edit import FormView
+
+
+class GenerateRandomUserView(FormView):
+    template_name = 'generate_random_users.html'
+    form_class = GenerateRandomUserForm
+    def form_valid(self, form):
+        total = form.cleaned_data.get('total')
+        create_random_user_accounts.delay(total)
+        messages.success(self.request, 'We are generating your random users! Wait a moment and refresh this page.')
+        return redirect('test_celery')

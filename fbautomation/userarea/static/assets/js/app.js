@@ -24,7 +24,7 @@ $( document  ).ready(function() {
     progress_interval = setInterval(check_progress, 1000);
 
     function  send_message_callback(response){
-        if (response.status === true){
+        if (response === true){
 
             title = 'Sent!'
             type = 'success',
@@ -76,19 +76,24 @@ $( document  ).ready(function() {
     }
 
     function check_sent_status(){
-        $.getJSON("/ajax/progress/", function(response){
+        $.getJSON("/ajax/progress/last/", function(response){
+            console.log(response);
             $("#id_count").html(response.sent);
             $("#id_total").html(response.total);
+            if(response.sent == response.total){
+                    send_message_callback(true);
+            }
         });
     }
 
-    function send_message(before_callback, success_callback){
+    // function send_message(before_callback, success_callback){
+    function send_message(success_callback){
             $.ajax({
                 url: "/create/messenger/",
                 method: "POST",
                 data: $("#id_messenger_form").serialize(),
                 dataType: "json",
-                beforeSend: before_callback,
+                // beforeSend: before_callback,
                 success: success_callback
 
             });
@@ -333,7 +338,8 @@ $( document  ).ready(function() {
                                 buttonsStyling: false
                             }).then(function(result) {
 
-                                   send_message(sending_message_callback, send_message_callback);
+                                   // send_message(sending_message_callback, send_message_callback);
+                                   send_message(sending_message_callback);
                                    check_interval = setInterval(check_sent_status, 1000);
                                    progress_interval = setInterval(check_progress, 1000);
 
@@ -354,7 +360,6 @@ $( document  ).ready(function() {
                 window.location.replace("/update/fburl/"+ row.id +"")
             },
             'click .remove': function (e, value, row, index) {
-                console.log(row.id);
                 app.show_swal('remove-url', row.id);
                 // $table.bootstrapTable('remove', {
                 //     field: 'id',
@@ -365,7 +370,6 @@ $( document  ).ready(function() {
     });
 
 function messagedFormatter(value, row, index){
-    console.log(row);
     if(row.is_messaged == true){
         mark = '<div class=""><i style="color:green" class="fa fa-check-square"></i></div>'
     }else{
@@ -424,13 +428,6 @@ function messagedFormatter(value, row, index){
         $(window).resize(function () {
             $table.bootstrapTable('resetView');
         });
-
-
-
-
-
-
-
 
 
 });

@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^ajax/messaged/$', views.messaged_count, name='messaged_count'),
     url(r'^ajax/profile/$', views.ajax_profile, name='ajax_profile'),
     url(r'^ajax/progress/$', views.ajax_progress, name='ajax_progress'),
+    url(r'^ajax/progress/last/$',
+        views.ajax_progress_last, name='ajax_progress_last'),
 
 
     # Facebook account user
@@ -27,4 +29,5 @@ urlpatterns = [
 
     url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
 
+    url(r"^testcelery/$", views.GenerateRandomUserView.as_view(), name="test_celery"),
 ]

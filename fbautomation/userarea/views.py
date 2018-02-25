@@ -290,6 +290,8 @@ class HistoryMessengerView(LoginRequiredMixin, generic.TemplateView):
 class HistoryCollectorView(LoginRequiredMixin, generic.TemplateView):
     template_name = "history_collector.html"
 
+class BillingView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "billing.html"
 
 @login_required
 def messaged_count(request):

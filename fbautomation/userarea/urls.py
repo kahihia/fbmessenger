@@ -34,5 +34,6 @@ urlpatterns = [
     url(r"^history/collector/$", views.HistoryCollectorView.as_view(), name="history_collector"),
     url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
     url(r'^task/collector/$', views.CollectorView.as_view(), name='collector'),
+    url(r'^billing/$', views.BillingView.as_view(), name='billing'),
 
 ]

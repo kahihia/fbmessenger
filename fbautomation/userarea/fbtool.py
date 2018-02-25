@@ -131,6 +131,8 @@ class Collector():
                 if len(result[index][1]) == 0:
                     result[index][1] = raw[1]
             else:
+                if self.url in profile:
+                    continue
                 result.append([profile, raw[1]])
 
 

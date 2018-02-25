@@ -21,6 +21,7 @@
                                     <form id="id_messenger_form" action="" method="post">
                                         {% csrf_token %}
                                         {{ form.as_p }}
+                                        <span class="help-block">You can put {first_name} for auto add.</span>
                                         <button type="button" onclick="app.show_swal('messenger')" class="btn btn-fill btn-info ">Send</button>
                                     </form>
 

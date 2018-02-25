@@ -120,6 +120,32 @@
 	                        <p>Facebook Profiles</p>
 	                    </a>
 	                </li>
+                    {% url 'history_messenger' as hm_url %}
+                    {% url 'history_collector' as hc_url %}
+                    <li {% if request.get_full_path == hm_url or request.get_full_path == hc_url %} class="active" {% endif %}>
+	                    <a data-toggle="collapse" href="#task_history" {% if request.get_full_path == hm_url or request.get_full_path == hc_url %} aria-expanded="true"{% endif %}>
+	                        <i class="fa fa-tasks"></i>
+	                        <p>Task history
+                                <b class="caret"></b>
+                            </p>
+	                    </a>
+                        <div id="task_history" {% if request.get_full_path == hm_url or request.get_full_path == hc_url %} class="collapse in" aria-expanded="true" {% else %} class="collapse"{% endif %}>
+							<ul class="nav">
+                                <li {% if request.get_full_path == hm_url %} class="active" {% endif %}>
+                                    <a href="{% url 'history_messenger' %}">
+										<span class="sidebar-mini">MT</span>
+										<span class="sidebar-normal">Messenger tasks</span>
+									</a>
+								</li>
+								<li {% if request.get_full_path == hc_url %} class="active" {% endif %}>
+                                    <a href="{% url 'history_collector' %}">
+									<span class="sidebar-mini">CT</span>
+									<span class="sidebar-normal">Collector tasks</span>
+                                    </a>
+								</li>
+							</ul>
+						</div>
+	                </li>
                     {% url 'profile' as profile_url%}
                     <li {% if request.get_full_path == profile_url %} class="active" {% endif %}>
                         <a href="{% url 'profile' %}">

@@ -26,7 +26,17 @@ class FacebookProfileUrl(models.Model):
         ordering = ["id"]
 
     def __str__(self):
-        return "{} - {}".format(self.tag, self.url)
+        string = ""
+        if self.full_name:
+            string += self.full_name
+        if self.tag:
+            string += " - {}".format(self.tag)
+
+        if self.url:
+            string += " - {}".format(self.url)
+
+        # return "{} - {} - {}".format(self.full_name, self.tag, self.url)
+        return string
 
 
 class FacebookAccount(models.Model):

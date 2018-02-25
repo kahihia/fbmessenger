@@ -1,0 +1,44 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Collector history</h4>
+	                                <p class="category">Task progress</p>
+	                            </div>
+	                            <div class="card-content table-responsive table-full-width">
+
+
+<div class="toolbar">
+    <!--Here you can write extra buttons/actions for the toolbar-->
+                                                </div>
+<table id="collector-history" class="table">
+    <thead>
+        <th data-field="id" data-sortable="true" class="text-center">ID</th>
+    	<th data-field="name" data-sortable="true">Name</th>
+    	<th data-field="collected" data-sortable="true">Collected</th>
+    	<th data-field="done" data-sortable="true" data-formatter="historyFormatter">Done</th>
+    	<th data-field="created_on" data-sortable="true">Created on</th>
+    </thead>
+</table>
+
+
+
+
+	                            </div>
+                                <div class="card-footer text-right">
+
+
+                                </div>
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+{% endblock %}

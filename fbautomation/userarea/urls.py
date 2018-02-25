@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^ajax/messaged/$', views.messaged_count, name='messaged_count'),
     url(r'^ajax/profile/$', views.ajax_profile, name='ajax_profile'),
+    url(r'^ajax/history/messenger/$', views.ajax_messenger_history, name='ajax_messenger_history'),
+    url(r'^ajax/history/collector/$', views.ajax_collector_history, name='ajax_collector_history'),
     url(r'^ajax/progress/$', views.ajax_progress, name='ajax_progress'),
     url(r'^ajax/progress/last/$',
         views.ajax_progress_last, name='ajax_progress_last'),
@@ -28,6 +30,8 @@ urlpatterns = [
     url(r'^create/fburl/$', views.new_fburl, name='create_fburl'),
     url(r'^update/fburl/(?P<pk>\d+)/$', views.UpdateFacebookProfileUrl.as_view(), name='update_fburl'),
     url(r"^facebookurls/$", views.FacebookProfileUrlView.as_view(), name="facebook_url_list"),
+    url(r"^history/messenger/$", views.HistoryMessengerView.as_view(), name="history_messenger"),
+    url(r"^history/collector/$", views.HistoryCollectorView.as_view(), name="history_collector"),
     url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
     url(r'^task/collector/$', views.CollectorView.as_view(), name='collector'),
 

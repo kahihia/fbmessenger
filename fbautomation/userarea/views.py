@@ -284,6 +284,12 @@ class UpdateFacebookProfileUrl(LoginRequiredMixin, generic.UpdateView):
 class FacebookProfileUrlView(LoginRequiredMixin, generic.TemplateView):
     template_name = "facebook_profile_list.html"
 
+class HistoryMessengerView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "history_messenger.html"
+
+class HistoryCollectorView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "history_collector.html"
+
 
 @login_required
 def messaged_count(request):
@@ -398,7 +404,7 @@ def ajax_profile(request):
     profile_count = profiles.count()
 
     if search:
-        profiles = profiles.filter(Q(url__contains=search) | Q(tag__contains=search))
+        profiles = profiles.filter(Q(url__contains=search) | Q(tag__contains=search) | Q(full_name__contains=search))
 
     if order_type == 'asc':
         profiles = profiles.order_by(sort)
@@ -422,6 +428,105 @@ def ajax_profile(request):
             "full_name": profile.full_name,
             "url": profile.url,
             "is_messaged": profile.is_messaged,
+            "created_on": filter_date(profile.created_on, "d/m/Y")
+        } for profile in profiles
+    ]
+
+    data = {
+        "total": profile_count,
+        "rows": rows
+    }
+    return JsonResponse(data)
+
+
+@login_required
+def ajax_messenger_history(request):
+
+    search = request.GET.get("search")
+    sort = request.GET.get("sort", "id")
+    order_type = request.GET.get("order", "desc")
+    limit = request.GET.get("limit")
+    offset = request.GET.get("offset")
+
+    page = (int(offset) / int(limit)) + 1
+
+    profiles = TaskProgress.objects.filter(user=request.user)
+    profile_count = profiles.count()
+
+    if search:
+        profiles = profiles.filter(name__contains=search)
+
+    if order_type == 'asc':
+        profiles = profiles.order_by(sort)
+    else:
+        profiles = profiles.order_by('-' + sort)
+
+    paginator = Paginator(profiles, limit)
+
+    try:
+        profiles = paginator.page(page)
+    except PageNotAnInteger:
+        profiles = paginator.page(1)
+    except EmptyPage:
+        profiles = paginator.page(paginator.num_pages)
+
+
+    rows = [
+        {
+            "id": profile.id,
+            "name": profile.name,
+            "sent": profile.sent,
+            "total": profile.total,
+            "done": profile.done,
+            "created_on": filter_date(profile.created_on, "d/m/Y")
+        } for profile in profiles
+    ]
+
+    data = {
+        "total": profile_count,
+        "rows": rows
+    }
+    return JsonResponse(data)
+
+
+@login_required
+def ajax_collector_history(request):
+
+    search = request.GET.get("search")
+    sort = request.GET.get("sort", "id")
+    order_type = request.GET.get("order", "desc")
+    limit = request.GET.get("limit")
+    offset = request.GET.get("offset")
+
+    page = (int(offset) / int(limit)) + 1
+
+    profiles = CollectProgress.objects.filter(user=request.user)
+    profile_count = profiles.count()
+
+    if search:
+        profiles = profiles.filter(name__contains=search)
+
+    if order_type == 'asc':
+        profiles = profiles.order_by(sort)
+    else:
+        profiles = profiles.order_by('-' + sort)
+
+    paginator = Paginator(profiles, limit)
+
+    try:
+        profiles = paginator.page(page)
+    except PageNotAnInteger:
+        profiles = paginator.page(1)
+    except EmptyPage:
+        profiles = paginator.page(paginator.num_pages)
+
+
+    rows = [
+        {
+            "id": profile.id,
+            "name": profile.name,
+            "collected": profile.collected,
+            "done": profile.done,
             "created_on": filter_date(profile.created_on, "d/m/Y")
         } for profile in profiles
     ]
@@ -458,8 +563,7 @@ def ajax_progress(request):
 def ajax_progress_last(request):
     #TODO TaskProgress matching query does not exist.
 
-    task = TaskProgress.objects.filter(user=request.user,
-                                       done=False).latest("id")
+    task = TaskProgress.objects.filter(user=request.user).latest("id")
 
     return JsonResponse(task.jsonify())
 
@@ -468,7 +572,6 @@ def ajax_progress_last(request):
 def ajax_collect_last(request):
     #TODO TaskProgress matching query does not exist.
 
-    collector = CollectProgress.objects.filter(user=request.user,
-                                       done=False).latest("id")
+    collector = CollectProgress.objects.filter(user=request.user).latest("id")
 
     return JsonResponse(collector.jsonify())

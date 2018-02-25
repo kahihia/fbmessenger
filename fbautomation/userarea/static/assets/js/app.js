@@ -489,16 +489,28 @@ $( document  ).ready(function() {
         };
     });
 
-function messagedFormatter(value, row, index){
-    if(row.is_messaged == true){
-        mark = '<div class=""><i style="color:green" class="fa fa-check-square"></i></div>'
-    }else{
+    function messagedFormatter(value, row, index){
+        if(row.is_messaged == true){
+            mark = '<div class=""><i style="color:green" class="fa fa-check-square"></i></div>'
+        }else{
 
-        mark = '<div class=""> <i class="fa fa-square-o"></i></div>'
+            mark = '<div class=""> <i class="fa fa-square-o"></i></div>'
+        }
+        return mark
+
     }
-    return mark
 
-}
+    function historyFormatter(value, row, index){
+        if(row.done == true){
+            mark = '<div class=""><i style="color:green" class="fa fa-check-square"></i></div>'
+        }else{
+
+            mark = '<div class=""> <i class="fa fa-spinner fa-spin"></i></div>'
+        }
+        return mark
+
+    }
+
     function operateFormatter(value, row, index) {
         return [
             '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action edit" href="javascript:void(0)">',
@@ -509,7 +521,10 @@ function messagedFormatter(value, row, index){
             '</a>'
         ].join('');
     }
+
     var $table = $('#bootstrap-table');
+    var $messenger_history = $('#messenger-history');
+    var $collector_history = $('#collector-history');
 
     $().ready(function(){
         $table.bootstrapTable({
@@ -542,12 +557,77 @@ function messagedFormatter(value, row, index){
             }
         });
 
+        $messenger_history.bootstrapTable({
+            toolbar: ".toolbar",
+            clickToSelect: true,
+            showRefresh: true,
+            search: true,
+            showToggle: true,
+            showColumns: true,
+            pagination: true,
+            sortOrder: 'desc',
+            pageSize: 10,
+            url: '/ajax/history/messenger/',
+            sidePagination: 'server',
+            clickToSelect: false,
+            pageList: [10,20,30,50,100],
+
+            formatShowingRows: function(pageFrom, pageTo, totalRows){
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function(pageNumber){
+                return pageNumber + " rows visible";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
+
+        $collector_history.bootstrapTable({
+            toolbar: ".toolbar",
+            clickToSelect: true,
+            showRefresh: true,
+            search: true,
+            showToggle: true,
+            showColumns: true,
+            pagination: true,
+            sortOrder: 'desc',
+            pageSize: 10,
+            url: '/ajax/history/collector/',
+            sidePagination: 'server',
+            clickToSelect: false,
+            pageList: [10,20,30,50,100],
+
+            formatShowingRows: function(pageFrom, pageTo, totalRows){
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function(pageNumber){
+                return pageNumber + " rows visible";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
         //activate the tooltips after the data table is initialized
         $('[rel="tooltip"]').tooltip();
 
         $(window).resize(function () {
             $table.bootstrapTable('resetView');
+            $messenger_history.bootstrapTable('resetView');
+            $collector_history.bootstrapTable('resetView');
         });
+
+
 
 
 });

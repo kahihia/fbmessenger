@@ -21,7 +21,7 @@ from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
     TaskProgress, CollectProgress
 
-from .tasks import send_message
+from .tasks import send_message, collect_urls
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -360,6 +360,10 @@ class CollectorView(LoginRequiredMixin, generic.FormView):
         task.save()
 
 
+        collect_urls.delay(self.request.user.pk,
+                           form.cleaned_data["url"], task.id,
+                           form.cleaned_data.get("task_name"))
+
         print(form.cleaned_data)
         json_response = {"status": True}
         return JsonResponse(json_response)
@@ -415,6 +419,7 @@ def ajax_profile(request):
         {
             "id": profile.id,
             "tag": profile.tag,
+            "full_name": profile.full_name,
             "url": profile.url,
             "is_messaged": profile.is_messaged,
             "created_on": filter_date(profile.created_on, "d/m/Y")

@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^ajax/progress/$', views.ajax_progress, name='ajax_progress'),
     url(r'^ajax/progress/last/$',
         views.ajax_progress_last, name='ajax_progress_last'),
+    url(r'^ajax/collect/last/$',
+        views.ajax_collect_last, name='ajax_collect_last'),
 
 
     # Facebook account user
@@ -26,8 +28,7 @@ urlpatterns = [
     url(r'^create/fburl/$', views.new_fburl, name='create_fburl'),
     url(r'^update/fburl/(?P<pk>\d+)/$', views.UpdateFacebookProfileUrl.as_view(), name='update_fburl'),
     url(r"^facebookurls/$", views.FacebookProfileUrlView.as_view(), name="facebook_url_list"),
-
     url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
+    url(r'^task/collector/$', views.CollectorView.as_view(), name='collector'),
 
-    url(r"^testcelery/$", views.GenerateRandomUserView.as_view(), name="test_celery"),
 ]

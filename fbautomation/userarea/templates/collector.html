@@ -8,8 +8,8 @@
 	                    <div class="col-md-12">
 	                        <div class="card">
 	                            <div class="card-header">
-	                                <h4 class="card-title">Messenger</h4>
-	                                <p class="category">Send messages</p>
+	                                <h4 class="card-title">Collector</h4>
+	                                <p class="category">Collect facebook profiles</p>
 	                            </div>
 	                            <div class="card-content">
                                     {% if messages %}
@@ -19,17 +19,17 @@
                                         {% endfor %}
                                     </ul>
                                     {% endif %}
-                                    <form id="testCelery" action="" method="post">
-                                        {% csrf_token %}
-    {{ form.as_p }}
-                                        <button type="submit" onclick="app.show_swal('messenger')" class="btn btn-fill btn-info ">Send</button>
+                                    <form id="id_collector_form" action="" method="POST">
+                                            {% csrf_token %}
+                                            {{ form.as_p }}
+                                    <button type="button" onclick="app.show_swal('collector')" class="btn btn-fill btn-info ">Start</button>
                                     </form>
                                 </div>
-                                </div>
-                                </div>
-                                </div>
-                                </div>
-                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 

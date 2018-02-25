@@ -106,6 +106,13 @@
 	                        <p>Messenger</p>
 	                    </a>
 	                </li>
+                    {% url 'collector' as collector_url%}
+                    <li {% if request.get_full_path == collector_url %} class="active" {% endif %}>
+                        <a href="{% url 'collector' %}">
+	                        <i class="ti-magnet"></i>
+	                        <p>Facebook Collector</p>
+	                    </a>
+	                </li>
                     {% url 'facebook_url_list' as profiles_url%}
                     <li {% if request.get_full_path == profiles_url %} class="active" {% endif %}>
                         <a href="{% url 'facebook_url_list' %}">

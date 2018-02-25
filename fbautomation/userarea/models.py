@@ -136,6 +136,41 @@ class TaskProgress(models.Model):
         return data
 
 
+class CollectProgress(models.Model):
+
+    user = models.ForeignKey(User, blank=True, null=True,
+                             on_delete=models.SET_NULL)
+    name = models.CharField(max_length=250, null=True, blank=True)
+    collected = models.IntegerField(default=0)
+    commenters = models.IntegerField(default=0)
+    likers = models.IntegerField(default=0)
+    done = models.BooleanField(default=False)
+
+    created_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
+
+
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self):
+        return "Collected {}".format(self.collected)
+
+    def jsonify(self):
+        data = {
+            "id": self.id,
+            "user": self.user.id,
+            "name": self.name,
+            "collected": self.collected,
+            "commenters": self.commenters,
+            "likers": self.likers,
+            "done": self.done,
+            "created_on": self.created_on
+        }
+        return data
+
+
+
 class GlobalSetting(models.Model):
     max_messages_day = models.IntegerField(default=50)
 

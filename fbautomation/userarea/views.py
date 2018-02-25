@@ -15,10 +15,11 @@ from django.core.cache import cache
 from django.template.defaultfilters import date as filter_date
 
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
-    FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm
+    FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm, \
+    CollectorForm
 
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
-    TaskProgress
+    TaskProgress, CollectProgress
 
 from .tasks import send_message
 
@@ -343,6 +344,40 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         return reverse("messenger")
 
 
+class CollectorView(LoginRequiredMixin, generic.FormView):
+
+    form_class = CollectorForm
+    template_name = "collector.html"
+
+
+    def form_valid(self, form):
+        super(CollectorView, self).form_valid(form)
+
+        task = CollectProgress(
+            user=self.request.user,
+            name=form.cleaned_data.get("task_name"),
+        )
+        task.save()
+
+
+        print(form.cleaned_data)
+        json_response = {"status": True}
+        return JsonResponse(json_response)
+
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
+
+    def get_success_url(self):
+        return reverse("collector")
+
+
+
 @login_required
 def ajax_profile(request):
 
@@ -401,8 +436,12 @@ def ajax_progress(request):
 
     tasks = TaskProgress.objects.filter(user=request.user,
                                            done=False)
+    collectors = CollectProgress.objects.filter(user=request.user,
+                                               done=False)
+    print(collectors)
     # print(progress)
-    progress = {task.id: task.jsonify() for task in tasks}
+    progress = {"messenger": {task.id: task.jsonify() for task in tasks},
+                "collector": {collector.id: collector.jsonify() for collector in collectors}}
     print("===================================")
     print(progress)
     print("---------------------------------")
@@ -420,16 +459,11 @@ def ajax_progress_last(request):
     return JsonResponse(task.jsonify())
 
 
-from .forms import GenerateRandomUserForm
-from .tasks import create_random_user_accounts
-from django.views.generic.edit import FormView
+@login_required()
+def ajax_collect_last(request):
+    #TODO TaskProgress matching query does not exist.
 
+    collector = CollectProgress.objects.filter(user=request.user,
+                                       done=False).latest("id")
 
-class GenerateRandomUserView(FormView):
-    template_name = 'generate_random_users.html'
-    form_class = GenerateRandomUserForm
-    def form_valid(self, form):
-        total = form.cleaned_data.get('total')
-        create_random_user_accounts.delay(total)
-        messages.success(self.request, 'We are generating your random users! Wait a moment and refresh this page.')
-        return redirect('test_celery')
+    return JsonResponse(collector.jsonify())

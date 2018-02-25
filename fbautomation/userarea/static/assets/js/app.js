@@ -4,13 +4,13 @@ $( document  ).ready(function() {
 
     function check_progress(){
         $.getJSON("/ajax/progress/", function(response){
-            // console.log(response);
-            check_response = $.isEmptyObject(response);
-            console.log(check_response);
+            check_messenger = $.isEmptyObject(response.messenger);
+            check_collector = $.isEmptyObject(response.collector);
+
             html_string = '';
             obj_count = 0;
-            if (check_response == false){
-                $.each(response, function(index, value){
+            if (check_messenger == false ){
+                $.each(response.messenger, function(index, value){
                     html_string += '<li><a href="#task'+ value.id +'">'+
                         '<i class="fa fa-spinner fa-spin"></i>'+
                         ' '+ value.name + '. Sent ' + value.sent + ' out of ' + value.total +'. '+
@@ -18,10 +18,24 @@ $( document  ).ready(function() {
                     obj_count += 1;
                 });
             }else{
+            }
+
+            if(check_collector == false){
+                $.each(response.collector, function(index, value){
+                    html_string += '<li><a href="#task'+ value.id +'">'+
+                        '<i class="fa fa-spinner fa-spin"></i>'+
+                        ' '+ value.name + '. Collected ' + value.collected + '</a></li>';
+                    obj_count += 1;
+                });
+
+            }
+
+            if (check_messenger == true && check_collector == true){
                 html_string += '<li><a href="#done">'+
                     '<i class="fa fa-check"></i>'+
                     ' No running tasks.</a></li>';
             }
+
             var progress = $("#id_task_menu");
             var task_count = $("#task_count");
             progress.html(html_string);
@@ -55,6 +69,59 @@ $( document  ).ready(function() {
           })
     }
 
+
+    function  collect_end_callback(response){
+        if (response === true){
+
+            title = 'Collect!'
+            type = 'success',
+            text = 'Collecting done...'
+        } else {
+            title = 'Not deleted!'
+            type = 'warning',
+            text = 'Your account adcould not been deleted.'
+
+        }
+        clearInterval(collector_interval);
+
+          swal({
+            title: title,
+            text: text,
+            type: type,
+            confirmButtonClass: "btn btn-success btn-fill",
+            buttonsStyling: false
+            }).then(function(result){
+              window.location.replace("/facebookurls/");
+          })
+    }
+
+    function  collector_callback(response){
+
+                title = 'Collecting...'
+                type = 'info',
+            // text = 'Messages are sending...'
+                    html =
+                        '<p><i class="fa fa-spinner fa-spin" style="font-size:60px"></i> </p>' +
+                        '<p>Now we are collecting...' +
+                        '<p>Collected profiles <b id="id_collect_count">0</b></p>';
+
+                  swal({
+                    title: title,
+                    // text: text,
+                    html: html,
+                    // type: type,
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    allowOutsideClick: true,
+                    confirmButtonClass: 'btn btn-success btn-fill',
+                    buttonsStyling: false,
+                    confirmButtonText: 'Minimize',
+
+                    }).then(function(result){
+                      location.reload();
+                  })
+    }
+
     function  sending_message_callback(response){
 
                 title = 'Sending...'
@@ -82,9 +149,19 @@ $( document  ).ready(function() {
                   })
     }
 
+
+    function check_collect_status(){
+        $.getJSON("/ajax/collect/last/", function(response){
+            console.log(response);
+            $("#id_collect_count").html(response.collected);
+            if(response.done == true){
+                     collect_end_callback(true);
+             }
+        });
+    }
+
     function check_sent_status(){
         $.getJSON("/ajax/progress/last/", function(response){
-            console.log(response);
             $("#id_count").html(response.sent);
             $("#id_total").html(response.total);
             if(response.sent == response.total){
@@ -105,6 +182,20 @@ $( document  ).ready(function() {
 
             });
     }
+
+
+    function collector(success_callback){
+            $.ajax({
+                url: "/task/collector/",
+                method: "POST",
+                data: $("#id_collector_form").serialize(),
+                dataType: "json",
+                // beforeSend: before_callback,
+                success: success_callback
+
+            });
+    }
+
 
     function  new_account_callback(response){
         if (response.success === true){
@@ -351,6 +442,28 @@ $( document  ).ready(function() {
                                    progress_interval = setInterval(check_progress, 1000);
 
                             });
+                }
+
+            } else if(type == "collector"){
+                if ($("#id_collector_form").valid()){
+                        swal({
+                                title: 'Are you sure?',
+                                text: 'This will run Facebook profile collector!',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, collect!',
+                                cancelButtonText: 'No',
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                cancelButtonClass: "btn btn-danger btn-fill",
+                                buttonsStyling: false
+                            }).then(function(result) {
+
+                                   collector(collector_callback);
+                                   collector_interval = setInterval(check_collect_status, 1000);
+                                   progress_interval = setInterval(check_progress, 1000);
+
+                            });
+
                 }
 
             }// end if

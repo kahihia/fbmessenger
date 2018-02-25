@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import FacebookAccount, FacebookMessage, FacebookProfileUrl, \
-    Avatar, Stats, TaskProgress
+    Avatar, Stats, TaskProgress, CollectProgress
 
 
 @admin.register(FacebookAccount)
@@ -32,3 +32,9 @@ class StatsAdmin(admin.ModelAdmin):
 @admin.register(TaskProgress)
 class TaskProgressAdmin(admin.ModelAdmin):
     list_display = ("name", "id", "user", "sent", "total", "done", "created_on")
+
+
+@admin.register(CollectProgress)
+class CollectProgressAdmin(admin.ModelAdmin):
+    list_display = ("name", "id", "user", "collected",
+                    "commenters", "likers", "done", "created_on")

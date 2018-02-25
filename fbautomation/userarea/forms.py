@@ -129,7 +129,7 @@ class MessageForm(forms.Form):
                                 widget=forms.TextInput(
                                     attrs={
                                         "class": "form-control",
-                                        "placeholde": "Enter task name",
+                                        "placeholder": "Enter task name",
                                     }))
 
     recipients = forms.ModelMultipleChoiceField(required=True,
@@ -148,15 +148,15 @@ class MessageForm(forms.Form):
 
 
 
+class CollectorForm(forms.Form):
+    task_name = forms.CharField(label="Task name",
+                                widget=forms.TextInput(
+                                    attrs={
+                                        "class": "form-control",
+                                        "placeholder": "Enter task name",
+                                    }))
 
-
-from django import forms
-from django.core.validators import MinValueValidator, MaxValueValidator
-
-class GenerateRandomUserForm(forms.Form):
-    total = forms.IntegerField(
-        validators=[
-            MinValueValidator(50),
-            MaxValueValidator(500)
-        ]
-    )
+    url = forms.URLField(label="Post Url", required=True,
+                         widget=forms.URLInput(
+                             attrs={"class": "form-control broder-input",
+                                    "placeholder": "http://facebook.com/some/post/url/"}))

@@ -88,8 +88,8 @@ class Messenger():
 
 
 class Collector():
-    def __init__(self, username, password, url, proxy=None, loading_delay=3,
-                 delay_on_page=10, delay_between_recipients=120):
+    def __init__(self, username, password, url, proxy=None, loading_delay=15,
+                 delay_on_page=15, delay_between_recipients=120):
 
         self.username = username
         self.password = password
@@ -145,6 +145,7 @@ class Collector():
     def get_commentors(self):
         self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
         comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
+        time.sleep(self.loading_delay)
         view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
         while view_more_key in comments_block.get_attribute('innerHTML'):
             comments_block.find_element_by_xpath(".//a[@class='UFIPagerLink']").click()
@@ -158,6 +159,7 @@ class Collector():
 
     def get_likers(self):
         self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+        time.sleep(self.loading_delay)
         comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
         comments_block.find_element_by_xpath(".//a[@rel='ignore']").click()
         time.sleep(self.loading_delay)
@@ -186,7 +188,7 @@ class Collector():
 if __name__ == '__main__':
     collector = Collector("georgegaucho@mail.com",
                         "g30rg3g20ch0",
-                        "https://www.facebook.com/successwithmark/videos/2020259518003559/")
+                          "https://www.facebook.com/grantcardonefan/posts/10156060294808563")
 
     data = collector.collect()
     print(data)

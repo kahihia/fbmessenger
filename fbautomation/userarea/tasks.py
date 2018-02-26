@@ -70,6 +70,9 @@ def collect_urls(user, url, task, tag=None):
             )
             new_url.save()
 
+            progress.collected += 1
+            progress.save()
+
     progress.collected = len(data)
     progress.done = True
     progress.save()

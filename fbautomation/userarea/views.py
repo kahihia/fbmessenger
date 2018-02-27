@@ -416,7 +416,7 @@ def ajax_profile(request):
     profile_count = profiles.count()
 
     if search:
-        profiles = profiles.filter(Q(url__contains=search) | Q(tag__contains=search) | Q(full_name__contains=search))
+        profiles = profiles.filter(Q(url__icontains=search) | Q(tag__icontains=search) | Q(full_name__icontains=search))
 
     if order_type == 'asc':
         profiles = profiles.order_by(sort)
@@ -466,7 +466,7 @@ def ajax_messenger_history(request):
     profile_count = profiles.count()
 
     if search:
-        profiles = profiles.filter(name__contains=search)
+        profiles = profiles.filter(name__icontains=search)
 
     if order_type == 'asc':
         profiles = profiles.order_by(sort)
@@ -487,6 +487,7 @@ def ajax_messenger_history(request):
         {
             "id": profile.id,
             "name": profile.name,
+            "url": profile.url,
             "sent": profile.sent,
             "total": profile.total,
             "done": profile.done,
@@ -512,39 +513,39 @@ def ajax_collector_history(request):
 
     page = (int(offset) / int(limit)) + 1
 
-    profiles = CollectProgress.objects.filter(user=request.user)
-    profile_count = profiles.count()
+    collector = CollectProgress.objects.filter(user=request.user)
+    collector_count = collector.count()
 
     if search:
-        profiles = profiles.filter(name__contains=search)
+        collector = collector.filter(name__icontains=search)
 
     if order_type == 'asc':
-        profiles = profiles.order_by(sort)
+        collector = collector.order_by(sort)
     else:
-        profiles = profiles.order_by('-' + sort)
+        collector = collector.order_by('-' + sort)
 
-    paginator = Paginator(profiles, limit)
+    paginator = Paginator(collector, limit)
 
     try:
-        profiles = paginator.page(page)
+        collector = paginator.page(page)
     except PageNotAnInteger:
-        profiles = paginator.page(1)
+        collector = paginator.page(1)
     except EmptyPage:
-        profiles = paginator.page(paginator.num_pages)
+        collector = paginator.page(paginator.num_pages)
 
 
     rows = [
         {
-            "id": profile.id,
-            "name": profile.name,
-            "collected": profile.collected,
-            "done": profile.done,
-            "created_on": filter_date(profile.created_on, "d/m/Y")
-        } for profile in profiles
+            "id": collected.id,
+            "name": collected.name,
+            "collected": collected.collected,
+            "done": collected.done,
+            "created_on": filter_date(collected.created_on, "d/m/Y")
+        } for collected in collector
     ]
 
     data = {
-        "total": profile_count,
+        "total": collector_count,
         "rows": rows
     }
     return JsonResponse(data)

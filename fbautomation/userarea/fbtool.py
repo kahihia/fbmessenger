@@ -88,16 +88,13 @@ class Messenger():
 
 
 class Collector():
-    def __init__(self, username, password, url, proxy=None, loading_delay=15,
-                 delay_on_page=15, delay_between_recipients=120):
+    def __init__(self, username, password, url, proxy=None, loading_delay=15):
 
         self.username = username
         self.password = password
         self.url = url
         self.proxy = proxy
         self.loading_delay = loading_delay
-        self.delay_on_page = delay_on_page
-        self.delay_between_recipients = delay_between_recipients
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')

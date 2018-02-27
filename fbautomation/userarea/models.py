@@ -152,6 +152,7 @@ class CollectProgress(models.Model):
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
     name = models.CharField(max_length=250, null=True, blank=True)
+    url = models.URLField(max_length=1000, null=True, blank=True)
     collected = models.IntegerField(default=0)
     commenters = models.IntegerField(default=0)
     likers = models.IntegerField(default=0)

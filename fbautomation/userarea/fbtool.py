@@ -172,10 +172,11 @@ class Collector():
     def collect(self):
         self.browser.get(self.url)
         commenters = self.get_commentors()
-        likers = self.get_likers()
+        # likers = self.get_likers()
 
-        collected = commenters + likers
-        return collected
+        # collected = commenters + likers
+        # return collected
+        return commenters
 
     def close(self):
         print("Closing!")

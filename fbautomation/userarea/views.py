@@ -374,6 +374,7 @@ class CollectorView(LoginRequiredMixin, generic.FormView):
         task = CollectProgress(
             user=self.request.user,
             name=form.cleaned_data.get("task_name"),
+            url=form.cleaned_data.get("url")
         )
         task.save()
 
@@ -487,7 +488,6 @@ def ajax_messenger_history(request):
         {
             "id": profile.id,
             "name": profile.name,
-            "url": profile.url,
             "sent": profile.sent,
             "total": profile.total,
             "done": profile.done,
@@ -517,7 +517,7 @@ def ajax_collector_history(request):
     collector_count = collector.count()
 
     if search:
-        collector = collector.filter(name__icontains=search)
+        collector = collector.filter(Q(name__icontains=search) | Q(url__icontains=search))
 
     if order_type == 'asc':
         collector = collector.order_by(sort)
@@ -538,6 +538,7 @@ def ajax_collector_history(request):
         {
             "id": collected.id,
             "name": collected.name,
+            "url": collected.url,
             "collected": collected.collected,
             "done": collected.done,
             "created_on": filter_date(collected.created_on, "d/m/Y")

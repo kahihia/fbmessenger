@@ -88,7 +88,7 @@ class Messenger():
 
 
 class Collector():
-    def __init__(self, username, password, url, proxy=None, loading_delay=15):
+    def __init__(self, username, password, url, proxy=None, loading_delay=10):
 
         self.username = username
         self.password = password
@@ -141,12 +141,12 @@ class Collector():
 
     def get_commentors(self):
         self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
-        comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
         time.sleep(self.loading_delay)
+        comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
         view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
         while view_more_key in comments_block.get_attribute('innerHTML'):
             comments_block.find_element_by_xpath(".//a[@class='UFIPagerLink']").click()
-            time.sleep(self.loading_delay)
+            time.sleep(3)
         [elem.click() for elem in comments_block.find_elements_by_xpath(".//a[@class='UFIPagerLink']")]
         time.sleep(self.loading_delay)
         raw_commentors = [[e.get_attribute('href'), e.text] for e in comments_block.find_elements_by_xpath(".//a[@class=' UFICommentActorName']")]
@@ -164,7 +164,7 @@ class Collector():
         more_key = 'See More'
         while more_key in likers_block.get_attribute('innerHTML'):
             likers_block.find_element_by_xpath(".//a[text()='See More']").click()
-            time.sleep(self.loading_delay)
+            time.sleep(3)
         raw_likers = [[e.get_attribute('href'), e.text] for e in likers_block.find_elements_by_xpath(".//a")]
         likers = self.filter_users(raw_likers)
         return likers

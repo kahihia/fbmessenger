@@ -1,0 +1,56 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Users management</h4>
+	                                <p class="category">Add/Modify/Remove</p>
+	                            </div>
+	                            <div class="card-content table-responsive table-full-width">
+
+            {% csrf_token %}
+
+<div class="toolbar">
+    <!--Here you can write extra buttons/actions for the toolbar-->
+    <div class="">
+        <button  class="btn btn-wd btn-info btn-fill">
+            <span class="btn-label">
+                <i class="ti-plus"></i>
+            </span> Add new </button>
+
+    </div>
+</div>
+<table id="users-table" class="table">
+    <thead>
+        <th data-field="id" data-sortable="true" class="text-center">ID</th>
+    	<th data-field="username" data-sortable="true">Username</th>
+    	<th data-field="firstname" data-sortable="true">First name</th>
+    	<th data-field="lastname" data-sortable="true">Last name</th>
+    	<th data-field="email" data-sortable="true">E-mail</th>
+    	<th data-field="profiles" >Profiles</th>
+    	<th data-field="sent" >Sent</th>
+    	<th data-field="created_on" data-sortable="true">Created on</th>
+    	<th data-field="actions" class="td-actions text-right" data-events="userEvents" data-formatter="operateFormatter">Actions</th>
+    </thead>
+</table>
+
+
+
+
+	                            </div>
+                                <div class="card-footer text-right">
+
+
+                                </div>
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+{% endblock %}

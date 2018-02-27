@@ -7,6 +7,10 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 from django.shortcuts import redirect
 from django.db.models import Q
 
@@ -79,7 +83,6 @@ def signup(request):
 
 @login_required
 def profile(request):
-    # HELLLLLLLLLLLL HELLLLLLLLLL
     avatar_form = UserAvatarForm()
     password_form = PasswordChangeForm(request.user)
     # print("Not post", password_form)
@@ -259,7 +262,6 @@ def remove_fburl(request):
         facebook_url = FacebookProfileUrl.objects.filter(pk=request.POST.get("id"),
                                                           user=request.user,
                                                           is_deleted=False)[0]
-        print(facebook_url)
         if facebook_url:
             facebook_url.is_deleted = True
             facebook_url.save()
@@ -292,6 +294,14 @@ class HistoryCollectorView(LoginRequiredMixin, generic.TemplateView):
 
 class BillingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "billing.html"
+
+
+class UsersView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
+    template_name = "users.html"
+
+    def test_func(self):
+        return self.request.user.is_staff
+
 
 @login_required
 def messaged_count(request):
@@ -540,6 +550,119 @@ def ajax_collector_history(request):
     return JsonResponse(data)
 
 
+@login_required
+def ajax_users(request):
+    #TODO make less db queries.
+    #TODO stats sortable too.
+
+    search = request.GET.get("search")
+    sort = request.GET.get("sort", "id")
+    order_type = request.GET.get("order", "desc")
+    limit = request.GET.get("limit")
+    offset = request.GET.get("offset")
+
+    page = (int(offset) / int(limit)) + 1
+
+    users = User.objects.filter(is_active=True)
+    users_count = users.count()
+
+    if search:
+        users = users.filter(username=search)
+
+    if order_type == 'asc':
+        users = users.order_by(sort)
+    else:
+        users = users.order_by('-' + sort)
+
+    paginator = Paginator(users, limit)
+
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+
+
+    rows = [
+        {
+            "id": user.id,
+            "username": user.username,
+            "firstname": user.first_name,
+            "lastname": user.last_name,
+            "email": user.email,
+            "profiles": FacebookProfileUrl.objects.filter(user=user,
+                                                          is_deleted=False).count(),
+            "sent": Stats.objects.filter(user=user)[0].total_messages,
+            "created_on": filter_date(user.date_joined, "d/m/Y")
+        } for user in users
+    ]
+
+    data = {
+        "total": users_count,
+        "rows": rows
+    }
+    return JsonResponse(data)
+
+
+@login_required
+def ajax_user_remove(request):
+    if request.user.is_staff:
+        if request.POST:
+                user = User.objects.filter(pk=request.POST.get("id"))[0]
+                if user:
+                    user.is_active = False
+                    user.save()
+                    data = {"success": True}
+                else:
+                    data = {"success": False}
+
+                return JsonResponse(data)
+        else:
+            return JsonResponse({"status": "You are not allowed to view this page."})
+    else:
+        return redirect("index")
+
+
+@login_required
+def ajax_user_edit(request):
+    """User edit view.
+
+    Staff member edits user with ajax call.
+    """
+    if request.user.is_staff:
+        if request.POST:
+            id = request.POST.get("id")
+            username = request.POST.get("username")
+            email = request.POST.get("email")
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            password = request.POST.get("password")
+
+            if id:
+                user = User.objects.filter(pk=id)[0]
+            if username:
+                user.username = username
+            if email:
+                user.email = email
+            if first_name:
+                user.first_name = first_name
+            if last_name:
+                user.last_name = last_name
+            if password:
+                user.set_password(password)
+
+            user.save()
+
+
+            return JsonResponse({"success": True})
+
+        else:
+            return redirect("index")
+    else:
+        return redirect("index")
+
+
 @login_required()
 def ajax_progress(request):
     #TODO list to json check working station.
@@ -550,20 +673,19 @@ def ajax_progress(request):
                                            done=False)
     collectors = CollectProgress.objects.filter(user=request.user,
                                                done=False)
-    print(collectors)
+    # print(collectors)
     # print(progress)
     progress = {"messenger": {task.id: task.jsonify() for task in tasks},
                 "collector": {collector.id: collector.jsonify() for collector in collectors}}
-    print("===================================")
-    print(progress)
-    print("---------------------------------")
+    # print("===================================")
+    # print(progress)
+    # print("---------------------------------")
 
     return JsonResponse(progress)
 
 
 @login_required()
 def ajax_progress_last(request):
-    #TODO TaskProgress matching query does not exist.
 
     task = TaskProgress.objects.filter(user=request.user).latest("id")
 
@@ -572,7 +694,6 @@ def ajax_progress_last(request):
 
 @login_required()
 def ajax_collect_last(request):
-    #TODO TaskProgress matching query does not exist.
 
     collector = CollectProgress.objects.filter(user=request.user).latest("id")
 

@@ -17,6 +17,10 @@ urlpatterns = [
     url(r'^ajax/collect/last/$',
         views.ajax_collect_last, name='ajax_collect_last'),
 
+    url(r'^ajax/users/$', views.ajax_users, name='ajax_users'),
+    url(r'^ajax/users/remove/$', views.ajax_user_remove, name='remove_user'),
+    url(r'^ajax/users/edit/$', views.ajax_user_edit, name='remove_edit'),
+
 
     # Facebook account user
     # url(r'^fbaccounts/$', views.facebook_accounts, name='fbaccounts'),
@@ -35,5 +39,6 @@ urlpatterns = [
     url(r'^create/messenger/$', views.MessengerView.as_view(), name='messenger'),
     url(r'^task/collector/$', views.CollectorView.as_view(), name='collector'),
     url(r'^billing/$', views.BillingView.as_view(), name='billing'),
+    url(r'^users/$', views.UsersView.as_view(), name='users'),
 
 ]

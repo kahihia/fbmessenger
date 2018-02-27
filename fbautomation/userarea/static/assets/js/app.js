@@ -152,7 +152,6 @@ $( document  ).ready(function() {
 
     function check_collect_status(){
         $.getJSON("/ajax/collect/last/", function(response){
-            console.log(response);
             $("#id_collect_count").html(response.collected);
             if(response.done == true){
                      collect_end_callback(true);
@@ -316,10 +315,79 @@ $( document  ).ready(function() {
                               })
     }
 
+    function  user_edit_callback(response){
+        if (response.success === true){
+
+            type = 'success',
+            html = 'Account edited successfully.'
+        } else {
+            type = 'warning',
+            html = 'Could not edited account.'
+
+        }
+                        swal({
+                            type: type,
+                            html: html,
+                            confirmButtonClass: 'btn btn-success btn-fill',
+                            buttonsStyling: false
+
+                        }).then(function(result){
+                            $users_table.bootstrapTable('refresh');
+                        })
+    }
+
+    function user_edit(data, callback){
+
+            $.ajax({
+                url: "/ajax/users/edit/",
+                method: "POST",
+                data: data,
+                dataType: "json",
+                success: callback
+            });
+    }
+
     function remove_url(id, callback){
         if (id){
             $.ajax({
                 url: "/ajax/remove/fburl/",
+                method: "POST",
+                data: {csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                    id: id},
+                success: callback
+
+            });
+        }
+    }
+
+    function  remove_user_callback(response){
+        if (response.success === true){
+
+            title = 'Deleted!'
+            type = 'success',
+            text = 'User  has been deleted.'
+        } else {
+            title = 'Not deleted!'
+            type = 'warning',
+            text = 'User could not been deleted.'
+
+        }
+                              swal({
+                                title: title,
+                                text: text,
+                                type: type,
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                buttonsStyling: false
+                                }).then(function(result){
+                                  $users_table.bootstrapTable('refresh');
+                              })
+    }
+
+
+    function remove_user(id, callback){
+        if (id){
+            $.ajax({
+                url: "/ajax/users/remove/",
                 method: "POST",
                 data: {csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
                     id: id},
@@ -381,7 +449,7 @@ $( document  ).ready(function() {
                             }).then(function() {
 
                                    remove_account(data, remove_account_callback);
-                            });
+                            }).catch(swal.noop);
             } else if(type == "edit-account"){
                 a = $.getJSON("/ajax/get/fbaccount/"+ data +"/", function(result){
                     username = result.username;
@@ -420,7 +488,7 @@ $( document  ).ready(function() {
                             }).then(function(result) {
 
                                    remove_url(data, remove_url_callback);
-                            });
+                            }).catch(swal.noop);
 
             } else if(type == "messenger"){
                 if ($("#id_messenger_form").valid()){
@@ -441,7 +509,7 @@ $( document  ).ready(function() {
                                    check_interval = setInterval(check_sent_status, 1000);
                                    progress_interval = setInterval(check_progress, 1000);
 
-                            });
+                            }).catch(swal.noop);
                 }
 
             } else if(type == "collector"){
@@ -462,10 +530,60 @@ $( document  ).ready(function() {
                                    collector_interval = setInterval(check_collect_status, 1000);
                                    progress_interval = setInterval(check_progress, 1000);
 
-                            });
+                            }).catch(swal.noop);
 
                 }
 
+            } else if(type == "remove-user"){
+                        swal({
+                                title: 'Are you sure?',
+                                text: 'User will be removed!',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, remove it!',
+                                cancelButtonText: 'No, keep it',
+                                confirmButtonClass: "btn btn-success btn-fill",
+                                cancelButtonClass: "btn btn-danger btn-fill",
+                                buttonsStyling: false
+                            }).then(function(result) {
+
+                                   remove_user(data, remove_user_callback);
+                            }).catch(swal.noop);
+            } else if(type == "edit-user"){
+                swal({
+                        title: 'Edit User',
+                        html: '<form id="id_user_edit_form" action="" method="POST">'+
+                            '<div class="form-group">' +
+                            '<label>Username <label>'+
+                                  '<input id="id_id" value="'+ data.id +'" type="text" name="id" class="form-control hidden" />' +
+                                  '<input id="id_username" value="'+ data.username +'" type="text" name="username" class="form-control" required/>' +
+                              '</div>'+
+                              '<div class="form-group">'+
+                            '<label>First name <label>'+
+                                  '<input id="id_first_name" value="'+ data.firstname +'" type="text" name="first_name" class="form-control" />' +
+                              '</div>'+
+                              '<div class="form-group">'+
+                            '<label>Last name <label>'+
+                                  '<input id="id_last_name" value="'+ data.lastname +'" type="text" name="last_name" class="form-control" />' +
+                              '</div>'+
+                              '<div class="form-group">'+
+                            '<label>   E-mail <label>'+
+                                  '<input id="id_email" value="'+ data.email +'" type="text" name="email" class="form-control" required/>' +
+                              '</div>'+
+                             '<div class="form-group">' +
+                            '<label>Password <label>'+
+                                  '<input id="id_edit_password" type="password" name="password" class="form-control" />' +
+                              '</div></form>' ,
+                        showCancelButton: true,
+                        confirmButtonClass: 'btn btn-success btn-fill',
+                        cancelButtonClass: 'btn btn-danger btn-fill',
+                        buttonsStyling: false
+                    }).then(function(result) {
+                        //id_messenger_form
+                        var data = $("#id_user_edit_form").serialize();
+                        data = data + '&csrfmiddlewaretoken=' + $("input[name=csrfmiddlewaretoken]").val();
+                        user_edit(data, user_edit_callback);
+                    }).catch(swal.noop)
             }// end if
     } // end show_swal
 
@@ -485,6 +603,15 @@ $( document  ).ready(function() {
                 //     field: 'id',
                 //     values: [row.id]
                 // });
+            }
+        };
+
+        window.userEvents = {
+            'click .edit': function (e, value, row, index) {
+                app.show_swal('edit-user', row);
+            },
+            'click .remove': function (e, value, row, index) {
+                app.show_swal('remove-user', row.id);
             }
         };
     });
@@ -525,6 +652,7 @@ $( document  ).ready(function() {
     var $table = $('#bootstrap-table');
     var $messenger_history = $('#messenger-history');
     var $collector_history = $('#collector-history');
+    var $users_table = $('#users-table');
 
     $().ready(function(){
         $table.bootstrapTable({
@@ -618,6 +746,36 @@ $( document  ).ready(function() {
             }
         });
 
+        $users_table.bootstrapTable({
+            toolbar: ".toolbar",
+            clickToSelect: true,
+            showRefresh: true,
+            search: true,
+            showToggle: true,
+            showColumns: true,
+            pagination: true,
+            sortOrder: 'desc',
+            pageSize: 10,
+            url: '/ajax/users/',
+            sidePagination: 'server',
+            clickToSelect: false,
+            pageList: [10,20,30,50,100],
+
+            formatShowingRows: function(pageFrom, pageTo, totalRows){
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function(pageNumber){
+                return pageNumber + " rows visible";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
         //activate the tooltips after the data table is initialized
         $('[rel="tooltip"]').tooltip();
 
@@ -625,6 +783,7 @@ $( document  ).ready(function() {
             $table.bootstrapTable('resetView');
             $messenger_history.bootstrapTable('resetView');
             $collector_history.bootstrapTable('resetView');
+            $users_table.bootstrapTable('resetView');
         });
 
 

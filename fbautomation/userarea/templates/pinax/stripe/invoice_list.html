@@ -1,13 +1,33 @@
-{% extends "pinax/stripe/base.html" %}
+{% extends "base_generic.html" %}
 
-
-{% load bootstrap %}
-
-{% block body_class %}{{ block.super }} pinax-stripe-invoices{% endblock %}
 
 {% block content %}
-    <div class="pinax-subscriptions-invoices-container">
-        <h4>Payment History</h4>
-        {% include "pinax/stripe/_invoice_table.html" with invoices=object_list %}
-    </div>
+
+
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Payment History</h4>
+	                                <p class="category"></p>
+	                            </div>
+
+                                <div class="card-content table-responsive">
+
+                        {% include "pinax/stripe/_invoice_table.html" with invoices=object_list %}
+                                </div>
+
+
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+
+
+
 {% endblock %}

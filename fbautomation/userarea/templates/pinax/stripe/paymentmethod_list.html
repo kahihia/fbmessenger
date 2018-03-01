@@ -1,39 +1,70 @@
-{% extends "pinax/stripe/base.html" %}
+{% extends "base_generic.html" %}
 
 
-{% block body_class %}{{ block.super }} pinax-stripe-payment-methods{% endblock %}
 
 {% block content %}
-<div class="pinax-stripe-payment-methods-container">
-    <h4 class="with-actions">
-        Payment Methods
-        <a class="button" href="{% url "pinax_stripe_payment_method_create" %}">
-            <i class="fas fa-plus"></i>
-            Add Payment Method
-        </a>
-    </h4>
-    <table>
-        <thead>
-            <tr><th></th><th>Kind</th><th>Last 4</th><th class="pinax-stripe-expiration">Expiration</th><th class="pinax-stripe-created">Created</th></tr>
-        </thead>
-        <tbody>
-            {% for source in object_list %}
-            <tr>
-                <td>
-                    <a class="payment-method-delete" href="{% url "pinax_stripe_payment_method_delete" source.pk %}">Delete</a>
-                    <a class="payment-method-update" href="{% url "pinax_stripe_payment_method_update" source.pk %}">Update</a>
-                </td>
-                <td>{{ source.brand }}</td>
-                <td>{{ source.last4 }}</td>
-                <td class="pinax-stripe-expiration">{{ source.exp_month }} / {{ source.exp_year }}</td>
-                <td class="pinax-stripe-created">{{ source.created_at }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">You have no payment methods</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Payment Methods</h4>
+	                                <p class="category">Blank cateogry</p>
+	                            </div>
+
+	                            <div class="card-content table-responsive ">
+                                    <a href="{% url "pinax_stripe_payment_method_create" %}" class="btn btn-wd btn-info btn-fill">
+                                        <span class="btn-label">
+                                            <i class="ti-plus"></i>
+                                        </span> Add Payment Method </a>
+
+
+                            <table class="table">
+                                <thead>
+                            <tr>
+                                <th>Kind</th>
+                                <th>Last 4</th>
+                                <th class="pinax-stripe-expiration">Expiration</th>
+                                <th class="pinax-stripe-created">Created</th>
+                                <th>Actions</th>
+                            </tr>
+                                </thead>
+
+                            <tbody>
+                                {% for source in object_list %}
+                                <tr>
+                                    <td>{{ source.brand }}</td>
+                                    <td>{{ source.last4 }}</td>
+                                    <td class="pinax-stripe-expiration">{{ source.exp_month }} / {{ source.exp_year }}</td>
+                                    <td class="pinax-stripe-created">{{ source.created_at }}</td>
+                                    <td class="td-sctions text-right">
+	                                                <a href="{% url "pinax_stripe_payment_method_update" source.pk %}" rel="tooltip" title="Update" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="{% url "pinax_stripe_payment_method_delete" source.pk %}" rel="tooltip" title="Delete" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="fa fa-ban"></i>
+	                                                </a>
+
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5">You have no payment methods</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
     </table>
 </div>
+
+
+
+                                </div>
+	                        </div>
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
 {% endblock %}

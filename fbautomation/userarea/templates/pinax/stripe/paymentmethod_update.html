@@ -1,15 +1,22 @@
-{% extends "pinax/stripe/base.html" %}
+{% extends "base_generic.html" %}
 
 
-{% load bootstrap %}
-
-{% block body_class %}{{ block.super }} pinax-stripe-payment-methods{% endblock %}
 
 {% block content %}
-<div class="pinax-stripe-payment-method-update-container">
-    <h4>
-        Update Payment Method
-    </h4>
+
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Update Payment Method</h4>
+	                                <p class="category">Blank cateogry</p>
+	                            </div>
+
+                                <div class="card-content">
+
+
 
     {% if errors %}
         <div class="errors">
@@ -38,5 +45,15 @@
             <button>Update</button>
         </div>
     </form>
-</div>
+
+                                </div>
+
+
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
 {% endblock %}

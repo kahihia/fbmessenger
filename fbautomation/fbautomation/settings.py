@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'userarea.apps.UserareaConfig',
+    'django.contrib.sites',
+    'pinax.stripe',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +137,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # CELECRY
 CELERY_BROKER_URL = 'amqp://localhost'
+
+# Stripe
+SITE_ID = 1
+
+PINAX_STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_KcUnNBg2OQSkgK7sDcIicnDg")
+PINAX_STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_9GF6mHezsUWv8gDVw9rgr6Xh")

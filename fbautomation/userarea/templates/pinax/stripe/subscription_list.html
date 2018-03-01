@@ -1,0 +1,70 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Current subscriptions</h4>
+	                                <p class="category">List</p>
+	                            </div>
+
+	                            <div class="card-content table-responsive ">
+                                    <a href="{% url "pinax_stripe_subscription_create" %}" class="btn btn-wd btn-info btn-fill">
+                                        <span class="btn-label">
+                                            <i class="ti-plus"></i>
+                                        </span> Add subscription </a>
+
+	                                <table class="table">
+	                                    <thead>
+	                                        <tr>
+	                                            <th class="text-center">Current Period</th>
+	                                            <th>Plan</th>
+	                                            <th>Since</th>
+	                                            <th>Status</th>
+	                                            <th class="text-right">Actions</th>
+	                                        </tr>
+	                                    </thead>
+	                                    <tbody>
+                                        {% for subscription in object_list %}
+	                                        <tr>
+                                                    <td>
+                                                        {{ subscription.current_period_start.date }}—{{subscription.current_period_end.date }}
+                                                    </td>
+                                                    <td>
+                                                        {{ subscription.plan.name }}
+                                                    </td>
+                                                    <td>
+                                                        {{ subscription.start }}
+                                                    </td>
+                                                    <td>
+                                                        {{ subscription.status|title }}
+                                                    </td>
+                                                    <td>
+                                                    </td>
+	                                            <td class="td-actions text-right">
+	                                                <a href="{% url "pinax_stripe_subscription_update" subscription.pk %}" rel="tooltip" title="Update" class="btn btn-success btn-simple btn-xs">
+	                                                    <i class="ti-pencil-alt"></i>
+	                                                </a>
+	                                                <a href="{% url "pinax_stripe_subscription_delete" subscription.pk %}" rel="tooltip" title="Cancel" class="btn btn-danger btn-simple btn-xs">
+	                                                    <i class="fa fa-ban"></i>
+	                                                </a>
+	                                            </td>
+	                                        </tr>
+                                                {% empty %}
+                                                <tr><td colspan="5">You have no subscriptions.</td></tr>
+                                                {% endfor %}
+	                                    </tbody>
+	                                </table>
+                                </div>
+	                        </div>
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+
+{% endblock %}

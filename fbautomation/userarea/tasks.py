@@ -5,7 +5,7 @@
 import time
 from django.contrib.auth.models import User
 
-from django.core.cache import cache
+# from django.core.cache import cache
 
 from celery import shared_task
 
@@ -19,25 +19,26 @@ def send_message(user, recipients, message, task):
     our_user = User.objects.filter(pk=user)[0]
     progress = TaskProgress.objects.filter(pk=task)[0]
     print(user)
-    print("I am started.")
+    print("Got messenger task.")
     messenger = Messenger(our_user.facebookaccount.fb_user,
                           our_user.facebookaccount.fb_pass,
                           message)
     print(our_user, recipients, message)
-    for count, recipient in enumerate(recipients):
-        cache.set(our_user.pk, count+1)
+    # for count, recipient in enumerate(recipients):
+    for recipient in recipients:
+        # cache.set(our_user.pk, count+1)
         recipient = FacebookProfileUrl.objects.filter(pk=recipient)[0]
         recipient.is_messaged = True
         recipient.save()
         message_url = messenger.get_message_url(recipient.url)
         messenger.send(message_url)
-        print("I am here bro!")
+        print("Started sending messages!")
 
         progress.sent += 1
         progress.save()
         print(progress)
 
-        print(count, recipient)
+        # print(count, recipient)
         our_user.stats.total_messages += 1
         our_user.stats.save()
         time.sleep(10)

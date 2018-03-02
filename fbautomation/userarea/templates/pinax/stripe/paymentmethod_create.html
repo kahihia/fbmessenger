@@ -1,5 +1,6 @@
 {% extends "base_generic.html" %}
 <!-- TODO -->
+{% load static %}
 
 {% block content %}
 
@@ -10,13 +11,14 @@
 	                        <div class="card">
 	                            <div class="card-header">
 	                                <h4 class="card-title">Create Payment Method</h4>
-	                                <p class="category">Blank cateogry</p>
+	                                <p class="category">Add your card</p>
 	                            </div>
 
                                 <div class="card-content">
 
 
-                <div class="pinax-stripe-payment-methods-create-container">
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-5 col-sm-5">
                     {% if errors %}
                         <div class="errors">
                             {{ errors }}
@@ -27,9 +29,11 @@
                         <div id="card-element"></div>
                         <div id="card-errors" role="alert"></div>
                         <div class="form-actions">
+                            <br />
                         <button type="submit" class="btn btn-fill btn-info ">Add</button>
                         </div>
                     </form>
+                </div>
                 </div>
                                 </div>
 	                        </div>
@@ -41,7 +45,9 @@
 {% endblock %}
 
 {% block js %}
-    {% include "pinax/stripe/_stripe_js.html" %}
     {{ block.super }}
+    {% include "pinax/stripe/_stripe_js.html" %}
+
+	<script src="{% static 'assets/js/pinax-stripe/pinax-stripe2.js' %}"></script>
 {% endblock %}
 

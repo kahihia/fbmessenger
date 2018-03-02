@@ -17,6 +17,8 @@
                                 <div class="card-content">
 
 
+                                    <div class="row">
+                                    <div class="col-lg-6">
     {% if errors %}
         <div class="errors">
             {{ errors }}
@@ -25,15 +27,18 @@
     <form action="{% url "pinax_stripe_payment_method_delete" object.pk %}" method="post">
         {% csrf_token %}
         <p>Are you sure you want to delete this card?</p>
-        <div class="current-card">
+        <div class="alert alert-info">
             {{ object.brand }}
             {{ object.last4 }}
             Expires {{ object.exp_month }} / {{ object.exp_year }}
         </div>
         <div class="form-actions">
-            <button class="payment-method-delete">Yes, I'm sure. Delete.</button>
+            <br />
+            <button class="btn btn-fill btn-danger">Yes, I'm sure. Delete.</button>
         </div>
     </form>
+                                    </div>
+                                    </div>
                                 </div>
 
 

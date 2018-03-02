@@ -26,23 +26,30 @@
 
     <form action="{% url "pinax_stripe_payment_method_update" object.pk %}" method="post">
         {% csrf_token %}
-        <div class="current-card">
+    <div class="row">
+        <div class="col-md-4">
+        <div class="alert alert-info">
             {{ object.brand }}
             {{ object.last4 }}
             Expires {{ object.exp_month }} / {{ object.exp_year }}
+    </div>
+    </div>
         </div>
-        <div class="card-expiration">
+        <div class="">
             <label for="expMonth">New Expiration</label>
-            <div class="exp-month">
-                <input type="text" size="2" name="expMonth" />
-            </div>
-            /
-            <div class="exp-year">
-                <input type="text" size="4" name="expYear" />
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-2">
+                <input class="form-control" type="text" size="2" placeholder="Month" name="expMonth" />
+                    </div>
+            <div class="col-md-2">
+                <input class="form-control" type="text" size="4" placeholder="Year" name="expYear" />
+                    </div>
+                </div>
             </div>
         </div>
         <div class="form-actions">
-            <button>Update</button>
+            <button class="btn btn-fill btn-info">Update</button>
         </div>
     </form>
 

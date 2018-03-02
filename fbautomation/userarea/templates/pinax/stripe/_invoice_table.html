@@ -1,4 +1,4 @@
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>Date</th><th>Description</th><th>Period</th><th>Total</th><th>Paid</th>
@@ -20,7 +20,7 @@
             {{ invoice.total }}
         </td>
         <td class="pinax-stripe-invoice-paid">
-            {% if invoice.paid %}<i class="fas fa-check"></i>{% endif %}
+            {% if invoice.paid %}<i class="fa fa-check"></i>{% endif %}
         </td>
     </tr>
     {% endfor %}

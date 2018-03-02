@@ -11,23 +11,23 @@
 	                        <div class="card">
 	                            <div class="card-header">
 	                                <h4 class="card-title">Payment Methods</h4>
-	                                <p class="category">Blank cateogry</p>
+	                                <p class="category">Cards</p>
 	                            </div>
 
-	                            <div class="card-content table-responsive ">
+	                            <div class="card-content table-responsive">
                                     <a href="{% url "pinax_stripe_payment_method_create" %}" class="btn btn-wd btn-info btn-fill">
                                         <span class="btn-label">
                                             <i class="ti-plus"></i>
                                         </span> Add Payment Method </a>
 
 
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                             <tr>
                                 <th>Kind</th>
                                 <th>Last 4</th>
-                                <th class="pinax-stripe-expiration">Expiration</th>
-                                <th class="pinax-stripe-created">Created</th>
+                                <th class="">Expiration</th>
+                                <th class="">Created</th>
                                 <th>Actions</th>
                             </tr>
                                 </thead>
@@ -37,14 +37,14 @@
                                 <tr>
                                     <td>{{ source.brand }}</td>
                                     <td>{{ source.last4 }}</td>
-                                    <td class="pinax-stripe-expiration">{{ source.exp_month }} / {{ source.exp_year }}</td>
-                                    <td class="pinax-stripe-created">{{ source.created_at }}</td>
-                                    <td class="td-sctions text-right">
+                                    <td class="">{{ source.exp_month }} / {{ source.exp_year }}</td>
+                                    <td class="">{{ source.created_at }}</td>
+                                    <td class="td-sctions text-left">
 	                                                <a href="{% url "pinax_stripe_payment_method_update" source.pk %}" rel="tooltip" title="Update" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
+	                                                    <i class="ti-pencil-alt"></i> UPDATE
 	                                                </a>
 	                                                <a href="{% url "pinax_stripe_payment_method_delete" source.pk %}" rel="tooltip" title="Delete" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="fa fa-ban"></i>
+	                                                    <i class="fa fa-ban"></i> DELETE
 	                                                </a>
 
                                     </td>

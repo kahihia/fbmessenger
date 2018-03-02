@@ -14,18 +14,21 @@
 	                    <div class="col-md-12">
 	                        <div class="card">
 	                            <div class="card-header">
-	                                <h4 class="card-title">Blank</h4>
+	                                <h4 class="card-title">{% if object %}Change{% else %}Add{% endif %} Subscription</h4>
 	                                <p class="category">Blank cateogry</p>
 	                            </div>
 
                                 <div class="card-content">
 
 
-                            <div class="pinax-stripe-subscriptions-container">
-                             <h4>
-                                {% if object %}Change{% else %}Add{% endif %} Subscription
-                                <span class="current-plan">{% if object %}{{ object.plan.name }}{% endif %}</span>
-                            </h4>
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                         <h4>
+                                            <span class="current-plan">{% if object %}{{ object.plan.name }}{% endif %}</span>
+                                        </h4>
+
+
+
                             {% if errors %}
                                 <div class="errors">
                                     {{ errors }}
@@ -42,7 +45,8 @@
                                     <button type="submit" class="btn btn-fill btn-info">{% if object %}Update{% else %}Subscribe{% endif %}</button>
                                 </div>
                             </form>
-                        </div>
+                                        </div>
+                                    </div>
                     </div>
                 </div>
             </div>

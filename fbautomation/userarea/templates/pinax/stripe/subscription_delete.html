@@ -29,7 +29,8 @@
 
     <form action="{% url "pinax_stripe_subscription_delete" object.pk %}" method="post">
         {% csrf_token %}
-        <button>Cancel</button>
+        <br />
+        <button class="btn btn-fill btn-danger">Cancel</button>
     </form>
 
 

@@ -8,7 +8,7 @@
 	                    <div class="col-md-12">
 	                        <div class="card">
 	                            <div class="card-header">
-	                                <h4 class="card-title">Current subscriptions</h4>
+	                                <h4 class="card-title">Current Subscriptions</h4>
 	                                <p class="category">List</p>
 	                            </div>
 
@@ -18,7 +18,7 @@
                                             <i class="ti-plus"></i>
                                         </span> Add subscription </a>
 
-	                                <table class="table">
+	                                <table class="table table-striped">
 	                                    <thead>
 	                                        <tr>
 	                                            <th class="text-center">Current Period</th>
@@ -45,12 +45,12 @@
                                                     </td>
                                                     <td>
                                                     </td>
-	                                            <td class="td-actions text-right">
+	                                            <td class="td-actions text-left">
 	                                                <a href="{% url "pinax_stripe_subscription_update" subscription.pk %}" rel="tooltip" title="Update" class="btn btn-success btn-simple btn-xs">
-	                                                    <i class="ti-pencil-alt"></i>
+	                                                    <i class="ti-pencil-alt"></i> UPDATE
 	                                                </a>
 	                                                <a href="{% url "pinax_stripe_subscription_delete" subscription.pk %}" rel="tooltip" title="Cancel" class="btn btn-danger btn-simple btn-xs">
-	                                                    <i class="fa fa-ban"></i>
+	                                                    <i class="fa fa-ban"></i> CANCEL
 	                                                </a>
 	                                            </td>
 	                                        </tr>

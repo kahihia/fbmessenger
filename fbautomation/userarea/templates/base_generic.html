@@ -138,14 +138,17 @@
 
 
 
-                    <li>
+                    <li {% if "payments" in request.get_full_path %}class="active" {% endif %}>
                         {% url 'billing' as billing_url%}
 
-                        <a data-toggle="collapse" href="#Billing" class="" aria-expanded="{% if request.get_full_path == billing_url %}true{% else %}false{% endif %}">
+                        <a data-toggle="collapse" href="#Billing" {% if "payments" in request.get_full_path %} aria-expanded="true"
+                        {% else %}
+                        aria-expanded="false"
+                        {% endif %}">
                             <i class="ti-credit-card"></i>
                             <p> Billing <b class="caret"></b> </p>
                         </a>
-                        <div {% if request.get_full_path == billing_url %}class="collapse in" aria-expanded="true"{% else %}class="collapse" aria-expanded="false" {% endif %}  id="Billing"  style="">
+                        <div {% if "payments" in request.get_full_path %}class="collapse in" aria-expanded="true"{% else %}class="collapse" aria-expanded="false" {% endif %}  id="Billing"  style="">
                             <ul class="nav">
                                 <li>
                                     <a href="{% url 'pinax_stripe_subscription_list' %}"> <span class="sidebar-mini">SL</span> <span class="sidebar-normal">Subscription list</span> </a>
@@ -155,7 +158,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'pinax_stripe_invoice_list' %}"> <span class="sidebar-mini">Ph</span> <span class="sidebar-normal">Payment History</span> </a>
+                                    <a href="{% url 'pinax_stripe_invoice_list' %}"> <span class="sidebar-mini">In</span> <span class="sidebar-normal">Invoices</span> </a>
                                 </li>
                             </ul>
                         </div>

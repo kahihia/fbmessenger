@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'pinax.stripe.middleware.ActiveSubscriptionMiddleware',
+    'userarea.middleware.ActiveSubscriptionMiddleware',
 ]
 
 ROOT_URLCONF = 'fbautomation.urls'
@@ -143,22 +143,13 @@ CELERY_BROKER_URL = 'amqp://localhost'
 # Stripe
 SITE_ID = 1
 
+# Stripe public key.
 PINAX_STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_KcUnNBg2OQSkgK7sDcIicnDg")
+# Stripe secret key.
 PINAX_STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_9GF6mHezsUWv8gDVw9rgr6Xh")
+
+# Page were are redirected users without subscreption.
 PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT = "pinax_stripe_subscription_create"
-PINAX_STRIPE_SUBSCRIPTION_REQUIRED_EXCEPTION_URLS = ["index", "pinax_stripe_subscription_create",
-                                                     "static", "create_fburl", "profile",
-                                                     "signup", "ajax_profile", "ajax_users",
-                                                     "remove_user", "remove_edit", "remove_fburl",
-                                                     "create_fburl", "update_fburl", "facebook_url_list",
-                                                     "history_messenger", "history_collector",
-                                                     "billing", "users",
-                                                     "pinax_stripe_subscription_list",
-                                                     "pinax_stripe_subscription_delete",
-                                                     "pinax_stripe_subscription_update",
-                                                     "pinax_stripe_payment_method_list",
-                                                     "pinax_stripe_payment_method_create",
-                                                     "pinax_stripe_payment_method_delete",
-                                                     "pinax_stripe_payment_method_update",
-                                                     "pinax_stripe_invoice_list",
-                                                     "pinax_stripe_webhook"]
+
+# Pages that requires subscreption.
+PINAX_STRIPE_SUBSCRIPTION_REQUIRED_URLS = ["messenger", "collector"]

@@ -50,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'pinax.stripe.middleware.ActiveSubscriptionMiddleware',
 ]
 
 ROOT_URLCONF = 'fbautomation.urls'
@@ -143,3 +145,20 @@ SITE_ID = 1
 
 PINAX_STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_KcUnNBg2OQSkgK7sDcIicnDg")
 PINAX_STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_9GF6mHezsUWv8gDVw9rgr6Xh")
+PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT = "pinax_stripe_subscription_create"
+PINAX_STRIPE_SUBSCRIPTION_REQUIRED_EXCEPTION_URLS = ["index", "pinax_stripe_subscription_create",
+                                                     "static", "create_fburl", "profile",
+                                                     "signup", "ajax_profile", "ajax_users",
+                                                     "remove_user", "remove_edit", "remove_fburl",
+                                                     "create_fburl", "update_fburl", "facebook_url_list",
+                                                     "history_messenger", "history_collector",
+                                                     "billing", "users",
+                                                     "pinax_stripe_subscription_list",
+                                                     "pinax_stripe_subscription_delete",
+                                                     "pinax_stripe_subscription_update",
+                                                     "pinax_stripe_payment_method_list",
+                                                     "pinax_stripe_payment_method_create",
+                                                     "pinax_stripe_payment_method_delete",
+                                                     "pinax_stripe_payment_method_update",
+                                                     "pinax_stripe_invoice_list",
+                                                     "pinax_stripe_webhook"]

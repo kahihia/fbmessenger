@@ -67,6 +67,8 @@
     {% block js %}
         {% include "pinax/stripe/_stripe_js.html" %}
         {{ block.super }}
-	    <script src="{% static 'assets/js/pinax-stripe/pinax-stripe2.js' %}"></script>
+        {% if not request.user.customer.default_source %}
+	        <script src="{% static 'assets/js/pinax-stripe/pinax-stripe2.js' %}"></script>
+        {% endif %}
     {% endblock %}
 

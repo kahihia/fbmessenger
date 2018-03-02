@@ -18,6 +18,8 @@ from django.core.cache import cache
 
 from django.template.defaultfilters import date as filter_date
 
+from pinax.stripe.actions import customers
+
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm, \
     CollectorForm
@@ -74,6 +76,7 @@ def signup(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
+            customers.create(user=user)
             login(request, user)
             return redirect('index')
     else:

@@ -1,2 +1,6 @@
 django==1.11
 pillow
+pinax-stripe
+selenium
+celery
+mysqlclient

@@ -69,6 +69,7 @@ def index(request):
 
 
 def signup(request):
+    # TODO Rewrite this to generic View.
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -76,6 +77,8 @@ def signup(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
+
+            # Creating Stripe customer id.
             customers.create(user=user)
             login(request, user)
             return redirect('index')

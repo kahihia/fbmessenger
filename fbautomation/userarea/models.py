@@ -2,6 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from pinax.stripe.models import Plan
 import datetime
 
 
@@ -185,6 +186,44 @@ class CollectProgress(models.Model):
 
 class GlobalSetting(models.Model):
     max_messages_day = models.IntegerField(default=50)
+
+
+class DefaultPlan(models.Model):
+    stripe_plan = models.OneToOneField(Plan, blank=True, null=True,
+                                       on_delete=models.SET_NULL)
+    message_limit = models.IntegerField()
+
+    COLOR_CHOICES = (
+        ('g', "green"),
+        ('y', "yellow"),
+        ('p', "purple"),
+    )
+    box_color = models.CharField(max_length=1, choices=COLOR_CHOICES,
+                                 blank=True, null=True, default="y")
+
+    def __str__(self):
+        return "{} {}".format(self.stripe_plan, self.message_limit)
+
+
+class UserPlan(models.Model):
+    user = models.OneToOneField(User, blank=True,
+                                null=True, on_delete=models.SET_NULL)
+    stripe_plan = models.ForeignKey(Plan, blank=True, null=True,
+                                    on_delete=models.SET_NULL)
+    messages_sent = models.IntegerField(default=0)
+    created_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
+
+
+    def exceeded_limit(self):
+        default_limit = DefaultPlan.objects.filter(stripe_plan=self.stripe_plan)[0]
+        if self.messages_sent >= default_limit:
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return "{} {} {}".format(self.user, self.stripe_plan, self.message_sent)
 
 
 

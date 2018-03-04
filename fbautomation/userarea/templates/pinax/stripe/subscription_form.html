@@ -28,10 +28,13 @@
 
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12">
+                                            {% if object %}
+                                            <div class="alert alert-success text-center">
                                          <h4>
-                                            <span class="current-plan">{% if object %}{{ object.plan.name }}{% endif %}</span>
+                                            <span class="text-center">Current plan - {{ object.plan.name }}</span>
                                         </h4>
-
+                                            </div>
+                                            {% endif %}
 
 
                             {% if errors %}
@@ -41,20 +44,48 @@
                             {% endif %}
                                 <form data-stripe-key="{{ PINAX_STRIPE_PUBLIC_KEY }}" data-card-mount-id="card-element" data-card-errors-id="card-errors" action="{{ post_url }}" method="post">
                                     {% csrf_token %}
-                                    {{ form }}
+
+                                    <div class="hidden">
+                                        {{ form }}
+                                    </div>
                                     {% if not request.user.customer.default_source %}
                                         <div id="card-element"></div>
                                         <div id="card-errors" role="alert"></div>
                                     {% endif %}
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-fill btn-info">{% if object %}Update{% else %}Subscribe{% endif %}</button>
-                                    </div>
+
+
+
+                    <div class="row">
+                {% for choice in form.plan.field.queryset %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="pricingTable {{ choice.defaultplan.get_box_color_display }}">
+                        <div class="pricingTable-header">
+                            <h3>{{ choice.name }}</h3>
+                            <span>Automating tasks</span>
+                        </div>
+                        <div class="pricing-plans">
+                            <span class="price-value"><i class="fa fa-usd"></i><span>{{ choice.amount }}</span></span>
+                            <span class="month">/month</span>
+                        </div>
+                        <div class="pricingContent">
+                            <ul>
+                                <li><b>{{ choice.defaultplan.message_limit }}</b> Messages</li>
+                                <li><b>50</b> Daily limit</li>
+                            </ul>
+                        </div><!-- CONTENT BOX-->
+                        <div class="pricingTable-sign-up">
+                            <button type="button" onclick="app.subscribe({{ choice.pk }})" class="btn btn-block">{% if object %}Update{% else %}Subscribe{% endif %}</button>
+                        </div><!-- BUTTON BOX-->
+                    </div>
+                </div>
+                {% endfor %}
+                    </div>
+
+                    <br />
                                 </form>
                                         </div>
                                     </div>
 
-                                    <br />
-                                        {% include "pricing.html" %}
                     </div>
                 </div>
             </div>

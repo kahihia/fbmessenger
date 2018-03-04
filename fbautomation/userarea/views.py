@@ -25,7 +25,7 @@ from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     CollectorForm
 
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
-    TaskProgress, CollectProgress
+    TaskProgress, CollectProgress, UserPlan
 
 from .tasks import send_message, collect_urls
 
@@ -61,11 +61,13 @@ def index(request):
                                                      is_deleted=False).count()
 
     stats = Stats.objects.filter(user=request.user)[0]
+    user_plan = UserPlan.objects.filter(user=request.user)[0]
 
 
     return render(request, "dashboard.html", {"accounts": accounts,
                                               "profile_urls": profile_urls,
-                                              "stats": stats})
+                                              "stats": stats,
+                                              "user_plan": user_plan})
 
 
 def signup(request):

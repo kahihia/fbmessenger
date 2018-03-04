@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 
 from pinax.stripe.actions import customers, subscriptions
 from pinax.stripe.conf import settings
+from .models import UserPlan
 
 try:
     from django.urls import resolve
@@ -34,7 +35,8 @@ class ActiveSubscriptionMiddleware(MixinorObject):
             url_name = resolve(request.path).url_name
             if url_name in settings.PINAX_STRIPE_SUBSCRIPTION_REQUIRED_URLS:
                 customer = customers.get_customer_for_user(request.user)
-                if not subscriptions.has_active_subscription(customer):
+                user_plan = UserPlan.objects.filter(user=request.user)[0]
+                if not subscriptions.has_active_subscription(customer) and user_plan.exceeded_limit() or user_plan.exceeded_limit():
                     return redirect(
                         settings.PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT
                     )

@@ -10,31 +10,6 @@
 	                            <div class="card-content">
 	                                <div class="row">
 	                                    <div class="col-xs-5">
-	                                        <div class="icon-big icon-warning text-center">
-	                                            <i class="ti-facebook"></i>
-	                                        </div>
-	                                    </div>
-	                                    <div class="col-xs-7">
-	                                        <div class="numbers">
-	                                            <p>Accounts</p>
-                                                {{ accounts }}
-	                                        </div>
-	                                    </div>
-	                                </div>
-	                            </div>
-								<div class="card-footer">
-									<hr />
-									<div class="stats">
-										<i class="ti-reload"></i> Updated now
-									</div>
-								</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-lg-3 col-sm-6">
-	                        <div class="card">
-	                            <div class="card-content">
-	                                <div class="row">
-	                                    <div class="col-xs-5">
 	                                        <div class="icon-big icon-danger text-center">
 	                                            <i class="ti-user"></i>
 	                                        </div>
@@ -51,6 +26,31 @@
 									<hr />
 									<div class="stats">
 										<i class="ti-timer"></i> In the last hour
+									</div>
+								</div>
+	                        </div>
+	                    </div>
+	                    <div class="col-lg-3 col-sm-6">
+	                        <div class="card">
+	                            <div class="card-content">
+	                                <div class="row">
+	                                    <div class="col-xs-5">
+	                                        <div class="icon-big icon-warning text-center">
+	                                            <i class="fa fa-comment"></i>
+	                                        </div>
+	                                    </div>
+	                                    <div class="col-xs-7">
+	                                        <div class="numbers">
+	                                            <p>Messages left</p>
+                                                {{ user_plan.messages_sent }}
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+								<div class="card-footer">
+									<hr />
+									<div class="stats">
+										<i class="ti-reload"></i> Updated now
 									</div>
 								</div>
 	                        </div>
@@ -113,8 +113,6 @@
                         </div>
 
                     </div>
-
-
 
 
                 </div>

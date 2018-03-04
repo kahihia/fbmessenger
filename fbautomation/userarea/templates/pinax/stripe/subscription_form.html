@@ -48,10 +48,15 @@
                                     <div class="hidden">
                                         {{ form }}
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-lg-6">
                                     {% if not request.user.customer.default_source %}
                                         <div id="card-element"></div>
                                         <div id="card-errors" role="alert"></div>
                                     {% endif %}
+                                        </div>
+                                    </div>
+                                    <br />
 
 
 
@@ -74,7 +79,7 @@
                             </ul>
                         </div><!-- CONTENT BOX-->
                         <div class="pricingTable-sign-up">
-                            <button type="button" onclick="app.subscribe({{ choice.pk }})" class="btn btn-block">{% if object %}Update{% else %}Subscribe{% endif %}</button>
+                            <button type="button" onclick="sub.subscribe({{ choice.pk }})" class="btn btn-block">{% if object %}Update{% else %}Subscribe{% endif %}</button>
                         </div><!-- BUTTON BOX-->
                     </div>
                 </div>
@@ -99,7 +104,7 @@
         {% include "pinax/stripe/_stripe_js.html" %}
         {{ block.super }}
         {% if not request.user.customer.default_source %}
-	        <script src="{% static 'assets/js/pinax-stripe/pinax-stripe2.js' %}"></script>
+	        <script src="{% static 'assets/js/pinax-stripe/min-stripe.js' %}"></script>
         {% endif %}
     {% endblock %}
 

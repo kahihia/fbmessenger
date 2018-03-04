@@ -412,17 +412,6 @@ $( document  ).ready(function() {
 
 
     app = {
-        subscribe: function (id){
-            console.log(id);
-            var form = document.querySelector('form[data-stripe-key]');
-              if (form === null) {
-                return;
-              }
-
-              $("#id_plan").val(id);
-              form.submit();
-
-        },
 
         show_swal: function (type, data){
             if(type == "new-account"){

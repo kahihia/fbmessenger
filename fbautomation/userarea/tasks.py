@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from celery import shared_task
 
 from .fbtool import Messenger, Collector
-from .models import TaskProgress, CollectProgress, FacebookProfileUrl
+from .models import TaskProgress, CollectProgress, FacebookProfileUrl, UserPlan
 
 
 
@@ -18,6 +18,7 @@ from .models import TaskProgress, CollectProgress, FacebookProfileUrl
 def send_message(user, recipients, message, task):
     our_user = User.objects.filter(pk=user)[0]
     progress = TaskProgress.objects.filter(pk=task)[0]
+    user_plan = UserPlan.objects.filter(user=our_user)[0]
     print(user)
     print("Got messenger task.")
     messenger = Messenger(our_user.facebookaccount.fb_user,
@@ -36,6 +37,8 @@ def send_message(user, recipients, message, task):
 
         progress.sent += 1
         progress.save()
+        user_plan.messages_sent += 1
+        user_plan.save()
         print(progress)
 
         # print(count, recipient)
@@ -71,7 +74,7 @@ def collect_urls(user, url, task, tag=None):
             )
             new_url.save()
 
-            progress.collected += 1
+            progress.collected -= 1
             progress.save()
 
     progress.collected = len(data)

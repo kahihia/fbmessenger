@@ -2,7 +2,8 @@ from django.db import models
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from pinax.stripe.models import Plan
+from pinax.stripe.models import Plan, Customer
+from pinax.stripe.signals import WEBHOOK_SIGNALS
 import datetime
 
 
@@ -210,20 +211,21 @@ class UserPlan(models.Model):
                                 null=True, on_delete=models.SET_NULL)
     stripe_plan = models.ForeignKey(Plan, blank=True, null=True,
                                     on_delete=models.SET_NULL)
-    messages_sent = models.IntegerField(default=0)
+    messages_sent = models.IntegerField(default=100)
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
 
 
     def exceeded_limit(self):
-        default_limit = DefaultPlan.objects.filter(stripe_plan=self.stripe_plan)[0]
-        if self.messages_sent >= default_limit:
+        # default_limit = DefaultPlan.objects.filter(stripe_plan=self.stripe_plan)[0]
+        # print(default_limit)
+        if self.messages_sent <= 0:
             return True
         else:
             return False
 
     def __str__(self):
-        return "{} {} {}".format(self.user, self.stripe_plan, self.message_sent)
+        return "{} {} {}".format(self.user, self.stripe_plan, self.messages_sent)
 
 
 
@@ -251,3 +253,31 @@ def create_user_stats(sender, instance, created, **kwargs):
 def create_facebook_account(sender, instance, created, **kwargs):
     if created:
         FacebookAccount.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def create_user_plan(sender, instance, created, **kwargs):
+    if created:
+        UserPlan.objects.create(user=instance)
+
+
+@receiver(WEBHOOK_SIGNALS["plan.created"])
+def handle_plan_created(sender, event, **kwargs):
+    print(event)
+
+
+@receiver(WEBHOOK_SIGNALS["invoice.payment_succeeded"])
+def handle_payment_succeeded(sender, event, **kwargs):
+    # TODO Clean this code.
+    # print(sender, event.validated_message["data"]["object"])
+    customer_id = event.validated_message["data"]["object"]["customer"]
+    # print(customer_id)
+    plan_id = event.validated_message["data"]["object"]["lines"]["data"][0]["plan"]["id"]#[0]#["plan"]#["id"]
+    plan = Plan.objects.filter(stripe_id=plan_id)[0]
+    # print(plan_id)
+    user = User.objects.filter(username=Customer.objects.filter(stripe_id=customer_id)[0])[0]
+    userplan = UserPlan.objects.filter(user=user)[0]
+    default_user_plan = DefaultPlan.objects.filter(stripe_plan=plan)[0]
+    userplan.stripe_plan = plan
+    userplan.messages_sent = default_user_plan.message_limit
+    userplan.save()

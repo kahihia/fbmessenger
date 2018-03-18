@@ -31,7 +31,7 @@ class Messenger():
             self.browser = webdriver.Chrome(chrome_options=options)
         else:
             self.browser = webdriver.Chrome(chrome_options=options,
-                                            executable_path='/home/dv/upworkTemp/chromedriver')
+                                            executable_path='/home/ubuntu/fbautomation-saas/chromedriver')
 
 
         self.browser.get('https://www.facebook.com')
@@ -98,7 +98,7 @@ class Collector():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 
@@ -106,7 +106,7 @@ class Collector():
             self.browser = webdriver.Chrome(chrome_options=options)
         else:
             self.browser = webdriver.Chrome(chrome_options=options,
-                                            executable_path='/home/dv/upworkTemp/chromedriver')
+                                            executable_path='/home/ubuntu/fbautomation-saas/chromedriver')
 
 
         self.browser.get('https://www.facebook.com')
@@ -142,15 +142,20 @@ class Collector():
     def get_commentors(self):
         self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
         time.sleep(self.loading_delay)
-        comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
-        view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
-        while view_more_key in comments_block.get_attribute('innerHTML'):
-            comments_block.find_element_by_xpath(".//a[@class='UFIPagerLink']").click()
-            time.sleep(3)
-        [elem.click() for elem in comments_block.find_elements_by_xpath(".//a[@class='UFIPagerLink']")]
-        time.sleep(self.loading_delay)
-        raw_commentors = [[e.get_attribute('href'), e.text] for e in comments_block.find_elements_by_xpath(".//a[@class=' UFICommentActorName']")]
-        commentors = self.filter_users(raw_commentors)
+        time.sleep(5)
+        try:
+            comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
+            view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
+            while view_more_key in comments_block.get_attribute('innerHTML'):
+                comments_block.find_element_by_xpath(".//a[@class='UFIPagerLink']").click()
+                time.sleep(3)
+            [elem.click() for elem in comments_block.find_elements_by_xpath(".//a[@class='UFIPagerLink']")]
+            time.sleep(self.loading_delay)
+            raw_commentors = [[e.get_attribute('href'), e.text] for e in comments_block.find_elements_by_xpath(".//a[@class=' UFICommentActorName']")]
+            commentors = self.filter_users(raw_commentors)
+        except Exception as err:
+            print(err)
+            self.close()
         return commentors
 
 

@@ -25,7 +25,7 @@ SECRET_KEY = 'l!*@4puy-8=%t%btn*s@!1@(t&zu1#75=yj08mi#pqmc^pe8$f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["18.195.30.63", "127.0.0.1"]
+ALLOWED_HOSTS = ["52.53.110.158", "outboundmessenger.com"]
 
 
 # Application definition
@@ -83,9 +83,9 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'automate',
-        'USER': 'autouser',
-        'PASSWORD': 't0k2k343K',
+        'NAME': 'outbound_saas',
+        'USER': 'automate',
+        'PASSWORD': 'jak@123a!@lKE09',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -129,6 +129,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = '/home/ubuntu/fbautomation-saas/fbautomation/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/admin/'
@@ -144,9 +146,9 @@ CELERY_BROKER_URL = 'amqp://localhost'
 SITE_ID = 1
 
 # Stripe public key.
-PINAX_STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_KcUnNBg2OQSkgK7sDcIicnDg")
+PINAX_STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_live_gsGdGK5ikLbv7zQFvONpP8CL")
 # Stripe secret key.
-PINAX_STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_9GF6mHezsUWv8gDVw9rgr6Xh")
+PINAX_STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_live_wGiBZul8jU7UXgfj7KGeWF3N")
 
 # Page were are redirected users without subscreption.
 PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT = "pinax_stripe_subscription_create"

@@ -37,7 +37,7 @@ def send_message(user, recipients, message, task):
 
         progress.sent += 1
         progress.save()
-        user_plan.messages_sent += 1
+        user_plan.messages_sent -= 1
         user_plan.save()
         print(progress)
 

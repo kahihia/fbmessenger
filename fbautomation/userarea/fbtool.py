@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 
+DRIVER_PATH = "../chromedriver"
 
 class Messenger():
 
@@ -31,7 +32,7 @@ class Messenger():
             self.browser = webdriver.Chrome(chrome_options=options)
         else:
             self.browser = webdriver.Chrome(chrome_options=options,
-                                            executable_path='/home/ubuntu/fbautomation-saas/chromedriver')
+                                            executable_path=DRIVER_PATH)
 
 
         self.browser.get('https://www.facebook.com')
@@ -106,7 +107,7 @@ class Collector():
             self.browser = webdriver.Chrome(chrome_options=options)
         else:
             self.browser = webdriver.Chrome(chrome_options=options,
-                                            executable_path='/home/ubuntu/fbautomation-saas/chromedriver')
+                                            executable_path=DRIVER_PATH)
 
 
         self.browser.get('https://www.facebook.com')

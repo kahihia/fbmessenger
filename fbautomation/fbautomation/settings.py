@@ -25,7 +25,7 @@ SECRET_KEY = 'l!*@4puy-8=%t%btn*s@!1@(t&zu1#75=yj08mi#pqmc^pe8$f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["52.53.110.158", "outboundmessenger.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "52.53.110.158", "outboundmessenger.com"]
 
 
 # Application definition
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'userarea.apps.UserareaConfig',
     'django.contrib.sites',
     'pinax.stripe',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +55,24 @@ MIDDLEWARE = [
 
     'userarea.middleware.ActiveSubscriptionMiddleware',
 ]
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+
+}
+
 
 ROOT_URLCONF = 'fbautomation.urls'
 
@@ -80,14 +100,14 @@ WSGI_APPLICATION = 'fbautomation.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'outbound_saas',
-        'USER': 'automate',
-        'PASSWORD': 'jak@123a!@lKE09',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'outbound_saas',
+        # 'USER': 'automate',
+        # 'PASSWORD': 'jak@123a!@lKE09',
+        # 'HOST': 'localhost',
+        # 'PORT': '',
     }
 }
 
@@ -130,7 +150,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-STATIC_ROOT = '/home/ubuntu/fbautomation-saas/fbautomation/static/'
+# STATIC_ROOT = '/home/ubuntu/fbautomation-saas/fbautomation/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/admin/'

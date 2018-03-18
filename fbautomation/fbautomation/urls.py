@@ -19,9 +19,14 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.conf import settings
 
+from rest_framework_jwt.views import obtain_jwt_token
+
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('userarea.urls')),
+    url(r'^api/', include('userarea.api.urls')),
+    # url(r'^api-token-auth/', obtain_jwt_token, name="api-login"),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r"^payments/", include("pinax.stripe.urls")),
 ]

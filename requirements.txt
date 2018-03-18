@@ -4,3 +4,7 @@ pinax-stripe
 selenium
 celery
 mysqlclient
+djangorestframework
+markdown
+django-filter
+

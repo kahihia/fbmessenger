@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
-API_URL = "http://127.0.0.1:8180/api/"
+API_URL = "https://outboundmessenger.com/api/"
 
 
 def get_token():
@@ -181,6 +181,8 @@ class MainWindow(QMainWindow):
         self.task_history = []
 
         # self.token_file = os.path.join(sys.path[0], "token.key")
+
+        self.token_file = os.path.join(os.getcwd(), "token.key")
         self.setMinimumSize(QSize(320, 140))
         self.setWindowTitle("Client Outboundmessenger.com")
 
@@ -218,24 +220,24 @@ class MainWindow(QMainWindow):
         Calling workers depending
         on task type.
         """
-        headers = {"Authorization": "Token " + get_token()}
-        r = requests.get(API_URL + "taskstatus/", headers=headers)
-        # print(r.json())
-        for data in r.json():
-            if data["task_id"] not in self.task_history:
-                if data["task_type"] == "m":
-                    print(data["task_id"])
-                    messenger_worker = MessengerWorker(data["task_id"],
-                                                       data["message"])
-                    self.threadpool.start(messenger_worker)
+        if get_token():
+            headers = {"Authorization": "Token " + get_token()}
+            r = requests.get(API_URL + "taskstatus/", headers=headers)
+            for data in r.json():
+                if data["task_id"] not in self.task_history:
+                    if data["task_type"] == "m":
+                        print(data["task_id"])
+                        messenger_worker = MessengerWorker(data["task_id"],
+                                                        data["message"])
+                        self.threadpool.start(messenger_worker)
 
-                if data["task_type"] == "c":
-                    collector_worker = CollectorWorker(data["task_id"],
-                                                       data["url"],
-                                                       data["tag"])
-                    self.threadpool.start(collector_worker)
+                    if data["task_type"] == "c":
+                        collector_worker = CollectorWorker(data["task_id"],
+                                                        data["url"],
+                                                        data["tag"])
+                        self.threadpool.start(collector_worker)
 
-                self.task_history.append(data["task_id"])
+                    self.task_history.append(data["task_id"])
 
 
 
@@ -248,7 +250,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    update_profile_url(2, 1, done=True)
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()

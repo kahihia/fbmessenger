@@ -5,6 +5,7 @@
 import sys
 import os
 import requests
+import time
 from fbtool import Messenger, Collector
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit
@@ -36,14 +37,14 @@ def get_facebook_account():
     return r.json()[0]
 
 
-def update_profile_url(user_pk, task_id):
+def update_profile_url(user_pk, task_id, done=False):
     """
     Updating status.
     """
     headers = {"Authorization": "Token " + get_token()}
     api_url = API_URL + "fburls/{}/".format(user_pk)
     data = {"pk": user_pk, "is_messaged": True,
-            "task_id": task_id}
+            "task_id": task_id, "done": done}
     r = requests.post(api_url, data=data, headers=headers)
     print(r)
 
@@ -89,7 +90,9 @@ class MessengerWorker(QRunnable):
             message_url = messenger.get_message_url(recipient["url"])
             messenger.send(message_url)
             update_profile_url(recipient["pk"], self.task_id)
+            time.sleep(5)
 
+        update_profile_url(recipient["pk"], self.task_id, done=True)
         messenger.close()
 
 
@@ -191,6 +194,7 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    update_profile_url(2, 1, done=True)
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()

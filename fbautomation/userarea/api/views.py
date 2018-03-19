@@ -5,7 +5,7 @@
 
 from rest_framework import generics, mixins
 from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount, \
-    Client
+    Client, TaskProgress, UserPlan
 
 from .serializers import FbProfileSerializer, TaskStatusSerializer, \
     FbAccountSerializer, FbUpdateSerializer
@@ -65,5 +65,21 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
         return FacebookProfileUrl.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        print(kwargs["pk"], kwargs["task_id"])
+        print(request.POST.get("task_id"))
+        task_id = request.POST.get("task_id")
+        done = request.POST.get("task_id")
+
+        user_plan = UserPlan.objects.filter(user=self.request.user)[0]
+        user_plan.messages_sent -= 1
+        user_plan.save()
+
+        progress = TaskProgress.objects.filter(pk=task_id)
+        if progress:
+            progress.sent += 1
+            progress.save()
+
+
+        if done:
+            progress.done = True
+            progress.save()
         return self.update(request, *args, **kwargs)

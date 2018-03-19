@@ -25,9 +25,13 @@ from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     CollectorForm
 
 from .models import Avatar, FacebookAccount, FacebookProfileUrl, Stats, \
-    TaskProgress, CollectProgress, UserPlan
+    TaskProgress, CollectProgress, UserPlan, TaskStatus, Client
+
+from rest_framework.authtoken.models import Token
 
 from .tasks import send_message, collect_urls
+
+import datetime
 
 
 class CreateFacebookAccount(generic.CreateView):
@@ -51,6 +55,12 @@ def facebook_accounts(request):
 
 
     return render(request, "facebook_accounts.html", {"accounts": accounts})
+
+
+@login_required
+def downloads(request):
+    token = Token.objects.filter(user=request.user)[0]
+    return render(request, "downloads.html", {"token": token})
 
 
 @login_required
@@ -253,7 +263,8 @@ def new_fburl(request):
                 if wrong_url:
                     messages.error(request, "Some of urls are wrong and are not saved!")
                 return redirect('create_fburl')
-            except:
+            except Exception as err:
+                print(err)
                 messages.error(request, "Each profile link must on a separate line.")
                 return redirect('create_fburl')
         else:
@@ -334,16 +345,30 @@ class MessengerView(LoginRequiredMixin, generic.FormView):
         recipients = form.cleaned_data["recipients"]
         print(form.cleaned_data["message"])
 
-        recipients = [recipient.pk for recipient in recipients]
+        # recipients = [recipient.pk for recipient in recipients]
         task = TaskProgress(
             user=self.request.user,
             name=form.cleaned_data.get("task_name"),
             total=len(recipients)
         )
         task.save()
+        print(task.id)
 
-        send_message.delay(self.request.user.pk,
-                           recipients, form.cleaned_data["message"], task.id)
+        for recipient in recipients:
+            recipient.task_id = task.id
+            recipient.save()
+
+        task_status = TaskStatus(
+            user=self.request.user,
+            task_id=task.id,
+            task_type="m",
+            message=form.cleaned_data["message"]
+        )
+        task_status.save()
+
+
+        # send_message.delay(self.request.user.pk,
+        #                    recipients, form.cleaned_data["message"], task.id)
 
         json_response = {"status": True}
         return JsonResponse(json_response)
@@ -512,6 +537,9 @@ def ajax_messenger_history(request):
 
 @login_required
 def ajax_collector_history(request):
+    """
+    Ajax view for collectiong history.
+    """
 
     search = request.GET.get("search")
     sort = request.GET.get("sort", "id")
@@ -562,6 +590,9 @@ def ajax_collector_history(request):
 
 @login_required
 def ajax_users(request):
+    """
+    User list ajax.
+    """
     #TODO make less db queries.
     #TODO stats sortable too.
 
@@ -683,10 +714,24 @@ def ajax_progress(request):
                                            done=False)
     collectors = CollectProgress.objects.filter(user=request.user,
                                                done=False)
-    # print(collectors)
-    # print(progress)
+
+    client = Client.objects.filter(user=request.user)[0]
+
+    if client.online:
+        current_time = datetime.datetime.now(datetime.timezone.utc)
+        client_last_update = client.last_update
+        time_diff = current_time - client_last_update
+
+        print("asd")
+        if time_diff.seconds > 300:
+            client.online = False
+            client.save()
+
+    client_status = client.online
+
     progress = {"messenger": {task.id: task.jsonify() for task in tasks},
-                "collector": {collector.id: collector.jsonify() for collector in collectors}}
+                "collector": {collector.id: collector.jsonify() for collector in collectors},
+                "client": client_status}
     # print("===================================")
     # print(progress)
     # print("---------------------------------")
@@ -696,6 +741,10 @@ def ajax_progress(request):
 
 @login_required()
 def ajax_progress_last(request):
+    """
+    Getting last progress data
+    into our progress dropdown.
+    """
 
     task = TaskProgress.objects.filter(user=request.user).latest("id")
 

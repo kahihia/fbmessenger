@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import FacebookAccount, FacebookMessage, FacebookProfileUrl, \
     Avatar, Stats, TaskProgress, CollectProgress, DefaultPlan, UserPlan, \
-    TaskStatus
+    TaskStatus, Client
 
 
 @admin.register(FacebookAccount)
@@ -53,3 +53,7 @@ class UserPlanAdmin(admin.ModelAdmin):
 @admin.register(TaskStatus)
 class TaskStatusAdmin(admin.ModelAdmin):
     list_display = ("user", "task_id", "task_type", "in_progress", "created_on")
+
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ("user", "online", "last_update", "created_on")

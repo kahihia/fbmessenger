@@ -1,0 +1,37 @@
+{% extends "base_generic.html" %}
+{% load static %}
+    {% block content %}
+
+	        <div class="content">
+	            <div class="container-fluid">
+	                <div class="row">
+	                    <div class="col-md-12">
+	                        <div class="card">
+	                            <div class="card-header">
+	                                <h4 class="card-title">Downloads</h4>
+	                                <p class="category">Download Client</p>
+	                            </div>
+
+                                <div class="card-content">
+                                    <div class="text-center">
+                                        <h3 id="">Access Token for client</h3>
+                                        <b>
+                                    {{ token }}
+                                        </b>
+                                    </div>
+                                    <div class="img-responsive">
+
+                                    <img src="{% static 'assets/img/download.png' %}" />
+                                    </div>
+                                </div>
+
+
+	                        </div>
+
+	                    </div>
+	                    </div>
+	                </div>
+	                </div>
+
+
+{% endblock %}

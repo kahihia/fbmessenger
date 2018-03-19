@@ -24,7 +24,7 @@ class Messenger():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 
@@ -42,6 +42,7 @@ class Messenger():
         pass_elem.send_keys(self.password)
         button_elem = self.browser.find_element_by_xpath("//input[@type='submit']")
         button_elem.click()
+        time.sleep(2)
 
 
     def get_message_url(self, recipient):
@@ -149,7 +150,7 @@ class Collector():
             view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
             while view_more_key in comments_block.get_attribute('innerHTML'):
                 comments_block.find_element_by_xpath(".//a[@class='UFIPagerLink']").click()
-                time.sleep(3)
+                time.sleep(6)
             [elem.click() for elem in comments_block.find_elements_by_xpath(".//a[@class='UFIPagerLink']")]
             time.sleep(self.loading_delay)
             raw_commentors = [[e.get_attribute('href'), e.text] for e in comments_block.find_elements_by_xpath(".//a[@class=' UFICommentActorName']")]

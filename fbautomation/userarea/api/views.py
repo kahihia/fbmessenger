@@ -4,9 +4,11 @@
 
 
 from rest_framework import generics, mixins
-from userarea.models import FacebookProfileUrl, TaskStatus
+from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount, \
+    Client
 
-from .serializers import FbProfileSerializer, TaskStatusSerializer
+from .serializers import FbProfileSerializer, TaskStatusSerializer, \
+    FbAccountSerializer, FbUpdateSerializer
 
 
 class TaskStatusView(generics.ListAPIView):
@@ -16,8 +18,22 @@ class TaskStatusView(generics.ListAPIView):
     def get_queryset(self):
         qs = TaskStatus.objects.filter(user=self.request.user,
                                        in_progress=False)
+
+        client = Client.objects.filter(user=self.request.user) #, online=False)
+        if client:
+            client[0].online = True
+            client[0].save()
+
         return qs
 
+
+class FbAccountApiView(generics.ListAPIView):
+    serializer_class = FbAccountSerializer
+
+
+    def get_queryset(self):
+        qs = FacebookAccount.objects.filter(user=self.request.user)
+        return qs
 
 
 class FbProfileApiView(mixins.CreateModelMixin, generics.ListAPIView):
@@ -25,12 +41,13 @@ class FbProfileApiView(mixins.CreateModelMixin, generics.ListAPIView):
 
 
     def get_queryset(self):
-        qs = FacebookProfileUrl.objects.all()
-        query = self.request.GET.get("q")
+        query = self.request.GET.get("task_id")
         print(self.request.user)
         if query is not None:
-            qs = qs.filter(url__icontains=query)
-        return qs
+            qs = FacebookProfileUrl.objects.filter(user=self.request.user,
+                                                   task_id=query,
+                                                   is_messaged=False)
+            return qs
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -41,8 +58,12 @@ class FbProfileApiView(mixins.CreateModelMixin, generics.ListAPIView):
 
 class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
     lookup_field = "pk"
-    serializer_class = FbProfileSerializer
+    serializer_class = FbUpdateSerializer
 
 
     def get_queryset(self):
-        return FacebookProfileUrl.objects.all()
+        return FacebookProfileUrl.objects.filter(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        print(kwargs["pk"], kwargs["task_id"])
+        return self.update(request, *args, **kwargs)

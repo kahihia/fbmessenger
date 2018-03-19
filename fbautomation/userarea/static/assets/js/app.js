@@ -6,6 +6,14 @@ $( document  ).ready(function() {
         $.getJSON("/ajax/progress/", function(response){
             check_messenger = $.isEmptyObject(response.messenger);
             check_collector = $.isEmptyObject(response.collector);
+            client_status = response.client;
+
+            client_front = $("#client_status");
+            if (client_status == true){
+                client_front.html("Online");
+            }else{
+                client_front.html("Offline");
+            }
 
             html_string = '';
             obj_count = 0;
@@ -40,6 +48,7 @@ $( document  ).ready(function() {
             var task_count = $("#task_count");
             progress.html(html_string);
             task_count.html(obj_count);
+
         });
     }
     progress_interval = setInterval(check_progress, 1000);

@@ -30,6 +30,7 @@ class FacebookProfileUrl(models.Model):
     url = models.URLField(max_length=500, null=True, blank=True)
     full_name = models.CharField(max_length=250, null=True, blank=True)
     tag = models.CharField(max_length=250, null=True, blank=True)
+    task_id = models.IntegerField(null=True, blank=True)
     is_messaged = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
@@ -224,6 +225,7 @@ class TaskStatus(models.Model):
     user = models.ForeignKey(User, blank=True, null=True,
                              on_delete=models.SET_NULL)
     task_id = models.IntegerField()
+    message = models.TextField(max_length=2000, null=True, blank=True)
     TASK_TYPE_CHOICES = (
         ("c", "collector"),
         ("m", "messenger"),
@@ -313,9 +315,6 @@ class Client(models.Model):
 
     def update(self):
         self.last_update = datetime.datetime.now()
-
-
-
 
 
 @receiver(post_save, sender=User)

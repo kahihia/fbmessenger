@@ -27,15 +27,15 @@
     <link href="{% static 'assets/css/themify-icons.css' %}" rel="stylesheet">
     <script src = "https://userpilot.io/widget/deploy/i.js"></script>
     <script >
-        window.userpilot = {"token": "39ig51s4"}; 
-        userpilot_lib.identify( 
+        window.userpilot = {"token": "39ig51s4"};
+        userpilot_lib.identify(
         "UNIQUE USER ID",
-        { 
-        name: "{{ user }} Doe", // Full name 
-        email: "{{ user.email }}", // Email address 
-        created_at: "{{ user.date_joined|date:"U"}}" // Signup date as a Unix timestamp 
-        } 
-        ); 
+        {
+        name: "{{ user }} Doe", // Full name
+        email: "{{ user.email }}", // Email address
+        created_at: "{{ user.date_joined|date:"U"}}" // Signup date as a Unix timestamp
+        }
+        );
     </script>
     {% endblock %}
 </head>
@@ -177,6 +177,13 @@
                     </li>
 
 
+                    {% url 'downloads' as dw_url%}
+                    <li {% if request.get_full_path == dw_url %} class="active" {% endif %}>
+                        <a href="{% url 'downloads' %}">
+	                        <i class="fa fa-download"></i>
+	                        <p>Downloads</p>
+	                    </a>
+	                </li>
 
 
                     {% if user.is_staff %}
@@ -252,6 +259,13 @@
 	                            </ul>
 	                        </li>
 
+	                        <li class="dropdown">
+	                            <a href="#client_status" class="dropdown-toggle" data-toggle="dropdown">
+	                                <i class="fa fa-laptop"></i>
+                                    <span class="notification">Client <b id="client_status"></b></span>
+	                            </a>
+	                        </li>
+
 	                    </ul>
 	                </div>
 	            </div>
@@ -273,7 +287,7 @@
 	        <footer class="footer">
 	            <div class="container-fluid">
 	                <div class="copyright pull-right">
-	                    &copy; <script>document.write(new Date().getFullYear())</script>, made in Canada 
+	                    &copy; <script>document.write(new Date().getFullYear())</script>, made in Canada
 	                </div>
 	            </div>
 	        </footer>

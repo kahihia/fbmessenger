@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^accounts/signup/$', views.signup, name='signup'),
     url(r'^profile/$', views.profile, name='profile'),
+    url(r'^downloads/$', views.downloads, name='downloads'),
     url(r'^ajax/messaged/$', views.messaged_count, name='messaged_count'),
     url(r'^ajax/profile/$', views.ajax_profile, name='ajax_profile'),
     url(r'^ajax/history/messenger/$', views.ajax_messenger_history, name='ajax_messenger_history'),

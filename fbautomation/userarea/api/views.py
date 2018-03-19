@@ -5,10 +5,11 @@
 
 from rest_framework import generics, mixins
 from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount, \
-    Client, TaskProgress, UserPlan
+    Client, TaskProgress, UserPlan, CollectProgress
 
 from .serializers import FbProfileSerializer, TaskStatusSerializer, \
-    FbAccountSerializer, FbUpdateSerializer
+    FbAccountSerializer, FbUpdateSerializer, FbulrCraeteSerializer, \
+    EmptySerializer
 
 
 class TaskStatusView(generics.ListAPIView):
@@ -34,6 +35,31 @@ class FbAccountApiView(generics.ListAPIView):
     def get_queryset(self):
         qs = FacebookAccount.objects.filter(user=self.request.user)
         return qs
+
+
+class FBurlCreate(generics.CreateAPIView):
+    serializer_class = FbulrCraeteSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        task_id = request.POST.get("task_id")
+        progress = CollectProgress.objects.filter(pk=task_id)[0]
+        progress.collected += 1
+        progress.save()
+
+        done = request.POST.get("done")
+        task_status = TaskStatus.objects.filter(task_id=task_id)
+        if done:
+            if progress:
+                progress.done = True
+                progress.save()
+
+            if task_status:
+                task_status[0].in_progress = True
+                task_status[0].save()
+        return self.create(request, *args, **kwargs)
 
 
 class FbProfileApiView(mixins.CreateModelMixin, generics.ListAPIView):
@@ -67,7 +93,8 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
     def post(self, request, *args, **kwargs):
         print(request.POST.get("task_id"))
         task_id = request.POST.get("task_id")
-        done = request.POST.get("task_id")
+        done = request.POST.get("done")
+
 
         user_plan = UserPlan.objects.filter(user=self.request.user)[0]
         user_plan.messages_sent -= 1
@@ -79,7 +106,37 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
             progress.save()
 
 
+
+        task_status = TaskStatus.objects.filter(task_id=task_id)
         if done:
-            progress.done = True
-            progress.save()
+            if task_status:
+                task_status[0].in_progress = True
+                task_status[0].save()
+
+            if progress:
+                progress.done = True
+                progress.save()
         return self.update(request, *args, **kwargs)
+
+
+class EmptyView(generics.GenericAPIView):
+    serializer_class = EmptySerializer
+
+    def post(self, request, *args, **kwargs):
+
+        task_id = request.POST.get("task_id")
+        print(task_id)
+
+        progress = CollectProgress.objects.filter(pk=task_id)[0]
+
+        done = request.POST.get("done")
+        task_status = TaskStatus.objects.filter(task_id=task_id)
+        if done:
+            if progress:
+                progress.done = True
+                progress.save()
+
+            if task_status:
+                task_status[0].in_progress = True
+                task_status[0].save()
+

@@ -37,6 +37,7 @@ def get_facebook_account():
     return r.json()[0]
 
 
+
 def update_profile_url(user_pk, task_id, done=False):
     """
     Updating status.
@@ -47,6 +48,32 @@ def update_profile_url(user_pk, task_id, done=False):
             "task_id": task_id, "done": done}
     r = requests.post(api_url, data=data, headers=headers)
     print(r)
+
+
+def create_profile_url(task_id, url, full_name, tag, done=False):
+    """
+    Create facebok url profile.
+    """
+    headers = {"Authorization": "Token " + get_token()}
+    api_url = API_URL + "fburlcreate/"
+    data = {"task_id": task_id,
+            "url": url,
+            "tag": tag,
+            "full_name": full_name,
+            "done": done}
+    print(data)
+    r = requests.post(api_url, data=data, headers=headers)
+    print(r.content)
+
+
+def empty_request(task_id, done=True):
+    """
+    Create facebok url profile.
+    """
+    headers = {"Authorization": "Token " + get_token()}
+    api_url = API_URL + "empty/"
+    data = {"task_id": task_id, "done": done}
+    r = requests.post(api_url, data=data, headers=headers)
 
 
 class MessengerWorker(QRunnable):
@@ -101,10 +128,12 @@ class CollectorWorker(QRunnable):
     Facbook profiles collector worker thread.
     """
 
-    def __init__(self, task_id, *args, **kwargs):
+    def __init__(self, task_id, url, tag, *args, **kwargs):
         super(CollectorWorker, self).__init__()
 
         self.task_id = task_id
+        self.url = url
+        self.tag = tag
         self.args = args
         self.kwargs = kwargs
 
@@ -117,6 +146,30 @@ class CollectorWorker(QRunnable):
         """
 
         print("I am in Collector worker.")
+
+        username = get_facebook_account()["fb_user"]
+        password = get_facebook_account()["fb_pass"]
+
+        collector = Collector(username, password, self.url)
+
+        data = collector.collect()
+        print(data)
+
+        collector.close()
+
+        if data:
+            data_len = len(data) - 1
+            for key, profile in enumerate(data):
+                if key == data_len:
+                    done = True
+                else:
+                    done = False
+                create_profile_url(self.task_id,
+                                   profile[0],  profile[1], self.tag, done)
+        else:
+            empty_request(self.task_id)
+
+
 
 
 class MainWindow(QMainWindow):
@@ -165,7 +218,6 @@ class MainWindow(QMainWindow):
         Calling workers depending
         on task type.
         """
-        print("Hello, World!")
         headers = {"Authorization": "Token " + get_token()}
         r = requests.get(API_URL + "taskstatus/", headers=headers)
         # print(r.json())
@@ -178,7 +230,9 @@ class MainWindow(QMainWindow):
                     self.threadpool.start(messenger_worker)
 
                 if data["task_type"] == "c":
-                    collector_worker = CollectorWorker(data["task_id"])
+                    collector_worker = CollectorWorker(data["task_id"],
+                                                       data["url"],
+                                                       data["tag"])
                     self.threadpool.start(collector_worker)
 
                 self.task_history.append(data["task_id"])

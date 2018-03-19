@@ -226,6 +226,8 @@ class TaskStatus(models.Model):
                              on_delete=models.SET_NULL)
     task_id = models.IntegerField()
     message = models.TextField(max_length=2000, null=True, blank=True)
+    url = models.URLField(max_length=1000, null=True, blank=True)
+    tag = models.CharField(max_length=250, null=True, blank=True)
     TASK_TYPE_CHOICES = (
         ("c", "collector"),
         ("m", "messenger"),

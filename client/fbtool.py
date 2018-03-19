@@ -100,7 +100,7 @@ class Collector():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 

@@ -11,13 +11,15 @@ class TaskStatusSerializer(serializers.ModelSerializer):
     task_type = serializers.ChoiceField(read_only=True,
                                         choices=TaskStatus.TASK_TYPE_CHOICES)
     message = serializers.CharField(read_only=True)
+    url = serializers.URLField(read_only=True)
+    tag = serializers.CharField(read_only=True)
     in_progress = serializers.BooleanField()
     created_on = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = TaskStatus
         fields = ("task_id", "task_type",
-                  "message", "in_progress", "created_on")
+                  "message", "url", "tag", "in_progress", "created_on")
 
 
 class FbAccountSerializer(serializers.ModelSerializer):
@@ -27,6 +29,16 @@ class FbAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = FacebookAccount
         fields = ("fb_user", "fb_pass")
+
+
+class FbulrCraeteSerializer(serializers.ModelSerializer):
+    url = serializers.URLField()
+    full_name = serializers.CharField()
+    tag = serializers.CharField()
+
+    class Meta:
+        model = FacebookProfileUrl
+        fields = ("url", "full_name", "tag")
 
 
 class FbProfileSerializer(serializers.ModelSerializer):
@@ -65,4 +77,9 @@ class FbUpdateSerializer(serializers.ModelSerializer):
         if qs.exists():
             raise serializers.ValidationError("This url exists")
         return value
+
+
+class EmptySerializer(serializers.Serializer):
+    task_id = serializers.IntegerField()
+    done = serializers.BooleanField()
 

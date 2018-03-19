@@ -411,10 +411,20 @@ class CollectorView(LoginRequiredMixin, generic.FormView):
         )
         task.save()
 
+        task_status = TaskStatus(
+            user=self.request.user,
+            task_id=task.id,
+            url=task.url,
+            task_type="c",
+            tag=task.name
+        )
 
-        collect_urls.delay(self.request.user.pk,
-                           form.cleaned_data["url"], task.id,
-                           form.cleaned_data.get("task_name"))
+        task_status.save()
+
+
+        # collect_urls.delay(self.request.user.pk,
+        #                    form.cleaned_data["url"], task.id,
+        #                    form.cleaned_data.get("task_name"))
 
         print(form.cleaned_data)
         json_response = {"status": True}
@@ -722,7 +732,6 @@ def ajax_progress(request):
         client_last_update = client.last_update
         time_diff = current_time - client_last_update
 
-        print("asd")
         if time_diff.seconds > 300:
             client.online = False
             client.save()

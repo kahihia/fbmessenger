@@ -66,7 +66,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
@@ -100,14 +99,14 @@ WSGI_APPLICATION = 'fbautomation.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'outbound_saas',
-        # 'USER': 'automate',
-        # 'PASSWORD': 'jak@123a!@lKE09',
-        # 'HOST': 'localhost',
-        # 'PORT': '',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'outbound_saas',
+        'USER': 'automate',
+        'PASSWORD': 'jak@123a!@lKE09',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -150,7 +149,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-# STATIC_ROOT = '/home/ubuntu/fbautomation-saas/fbautomation/static/'
+STATIC_ROOT = '/home/ubuntu/fbautomation-saas/fbautomation/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/admin/'

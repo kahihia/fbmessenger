@@ -8,7 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 
-DRIVER_PATH = "../chromedriver"
+DRIVER_PATH = "./chromedriver"
 
 class Messenger():
 
@@ -24,7 +24,7 @@ class Messenger():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 
@@ -100,7 +100,7 @@ class Collector():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 

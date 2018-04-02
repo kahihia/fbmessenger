@@ -11584,3 +11584,42 @@ star {
   background-color: #fefde5 !important;
 }
 
+.img-responsive {
+  display: flex;
+  text-align: center;
+}
+
+.download-part{
+  width:30%;
+}
+
+.download-item {
+  width:80%;
+  margin:auto;
+  height:80px;
+}
+
+.download-bg{
+  background-color: #373277;
+  padding-top:20px;
+}
+
+.download-item-t {
+  width:48%;
+  margin:1px;
+  height:80px;
+  float:left;
+}
+
+.download-part label{
+  display: table;
+  width: 100%;
+}
+
+.download-title{
+  color:white;
+}
+
+.download-desc{
+  color:#b4abc7;
+}

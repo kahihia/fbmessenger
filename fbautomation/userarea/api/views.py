@@ -100,7 +100,7 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
         user_plan.messages_sent -= 1
         user_plan.save()
 
-        progress = TaskProgress.objects.filter(pk=task_id)
+        progress = TaskProgress.objects.filter(pk=task_id)[0]
         if progress:
             progress.sent += 1
             progress.save()

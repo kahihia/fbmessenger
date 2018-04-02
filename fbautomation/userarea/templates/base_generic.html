@@ -163,11 +163,7 @@
                         <div {% if "payments" in request.get_full_path %}class="collapse in" aria-expanded="true"{% else %}class="collapse" aria-expanded="false" {% endif %}  id="Billing"  style="">
                             <ul class="nav">
                                 <li>
-                                    <a href="{% url 'pinax_stripe_subscription_list' %}"> <span class="sidebar-mini">SL</span> <span class="sidebar-normal">Subscription list</span> </a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'pinax_stripe_payment_method_list' %}"> <span class="sidebar-mini">Pm</span> <span class="sidebar-normal">Payment methods</span>
-                                    </a>
+                                    <a href="{% url "pinax_stripe_subscription_create" %}"> <span class="sidebar-mini">SL</span> <span class="sidebar-normal">Subscription list</span> </a>
                                 </li>
                                 <li>
                                     <a href="{% url 'pinax_stripe_invoice_list' %}"> <span class="sidebar-mini">In</span> <span class="sidebar-normal">Invoices</span> </a>
@@ -237,25 +233,6 @@
 	                            </a>
 	                            <ul id="id_task_menu" class="dropdown-menu">
                                     <!-- here goes ajax data -->
-	                            </ul>
-	                        </li>
-
-
-	                        <li class="dropdown">
-	                            <a href="#notifications" class="dropdown-toggle btn-rotate" data-toggle="dropdown">
-	                                <i class="ti-bell"></i>
-	                                <span class="notification">5</span>
-									<p class="hidden-md hidden-lg">
-										Notifications
-										<b class="caret"></b>
-									</p>
-	                            </a>
-	                            <ul class="dropdown-menu">
-	                                <li><a href="#not1">Notification 1</a></li>
-	                                <li><a href="#not2">Notification 2</a></li>
-	                                <li><a href="#not3">Notification 3</a></li>
-	                                <li><a href="#not4">Notification 4</a></li>
-	                                <li><a href="#another">Another notification</a></li>
 	                            </ul>
 	                        </li>
 

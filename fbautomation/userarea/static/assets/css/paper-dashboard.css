@@ -11585,12 +11585,13 @@ star {
 }
 
 .img-responsive {
-  display: flex;
+  width:100%;
   text-align: center;
 }
 
 .download-part{
-  width:30%;
+  width:400px;
+  margin:auto;
 }
 
 .download-item {

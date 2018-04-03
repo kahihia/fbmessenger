@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount
-
+import datetime
 
 class TaskStatusSerializer(serializers.ModelSerializer):
     """
@@ -30,6 +30,17 @@ class FbAccountSerializer(serializers.ModelSerializer):
         model = FacebookAccount
         fields = ("fb_user", "fb_pass")
 
+class FbMessageProfileSerializer(serializers.ModelSerializer):
+    pk = serializers.PrimaryKeyRelatedField(read_only=True)
+    url = serializers.CharField(read_only=True)
+    is_messaged = serializers.BooleanField(read_only=False)
+    updated_on = serializers.DateTimeField(read_only=True)
+    task_id = serializers.IntegerField(read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = FacebookProfileUrl
+        fields = ("pk", "url", "is_messaged", "updated_on", "task_id", "user_id")
 
 class FbulrCraeteSerializer(serializers.ModelSerializer):
     url = serializers.URLField()
@@ -63,10 +74,11 @@ class FbUpdateSerializer(serializers.ModelSerializer):
     pk = serializers.PrimaryKeyRelatedField(read_only=True)
     url = serializers.CharField(read_only=True)
     is_messaged = serializers.BooleanField(read_only=False)
+    updated_on = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = FacebookProfileUrl
-        fields = ("pk", "url", "is_messaged")
+        fields = ("pk", "url", "is_messaged", "updated_on")
 
     def validate_url(self, value):
         qs = FacebookProfileUrl.objects.filter(url__iexact=value)
@@ -78,6 +90,15 @@ class FbUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This url exists")
         return value
 
+    def update(self, instance, validated_data):
+        print("+++++++++++++Update+++++++++++++++")
+        print (instance)
+        print (validated_data)
+
+        instance.is_messaged = validated_data.get('is_messaged', instance.is_messaged)
+        instance.updated_on = datetime.datetime.now()
+        instance.save()
+        return instance
 
 class EmptySerializer(serializers.Serializer):
     task_id = serializers.IntegerField()

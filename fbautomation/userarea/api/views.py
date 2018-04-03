@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 
-
+import datetime
 from rest_framework import generics, mixins
 from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount, \
     Client, TaskProgress, UserPlan, CollectProgress
 
 from .serializers import FbProfileSerializer, TaskStatusSerializer, \
     FbAccountSerializer, FbUpdateSerializer, FbulrCraeteSerializer, \
-    EmptySerializer
+    EmptySerializer, FbMessageProfileSerializer
 
 
 class TaskStatusView(generics.ListAPIView):
@@ -27,7 +27,6 @@ class TaskStatusView(generics.ListAPIView):
 
         return qs
 
-
 class FbAccountApiView(generics.ListAPIView):
     serializer_class = FbAccountSerializer
 
@@ -36,6 +35,16 @@ class FbAccountApiView(generics.ListAPIView):
         qs = FacebookAccount.objects.filter(user=self.request.user)
         return qs
 
+class FbMessageProfileApiView(generics.ListAPIView):
+    serializer_class = FbMessageProfileSerializer
+
+    def get_queryset(self):
+        today = datetime.datetime.now().strftime("%Y-%m-%d 00:00:00")
+        qs = FacebookProfileUrl.objects.filter(user=self.request.user,
+                is_messaged=True,
+                updated_on__gte=today)
+
+        return qs
 
 class FBurlCreate(generics.CreateAPIView):
     serializer_class = FbulrCraeteSerializer
@@ -95,20 +104,25 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
         task_id = request.POST.get("task_id")
         done = request.POST.get("done")
 
+        print("+++++++++++++++++++++++REQUEST++++++++++++++++++++++")
+        print(request.POST)
 
         user_plan = UserPlan.objects.filter(user=self.request.user)[0]
         user_plan.messages_sent -= 1
         user_plan.save()
 
         progress = TaskProgress.objects.filter(pk=task_id)[0]
+        
         if progress:
-            progress.sent += 1
+            if done == 'False':
+                progress.sent += 1
+
             progress.save()
 
-
-
         task_status = TaskStatus.objects.filter(task_id=task_id)
-        if done:
+
+        if done == 'True':
+            print ("-----------------------> FB PROFILE TASK DONE------------------>")
             if task_status:
                 task_status[0].in_progress = True
                 task_status[0].save()
@@ -132,6 +146,7 @@ class EmptyView(generics.GenericAPIView):
         done = request.POST.get("done")
         task_status = TaskStatus.objects.filter(task_id=task_id)
         if done:
+            print ("-----------------------> EMPTY DONE------------------>")
             if progress:
                 progress.done = True
                 progress.save()

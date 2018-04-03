@@ -35,6 +35,8 @@ class FacebookProfileUrl(models.Model):
     is_deleted = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
+    updated_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
 
     class Meta:
         ordering = ["id"]

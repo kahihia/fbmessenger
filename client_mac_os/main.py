@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
-
+import json
+import datetime
 import sys
 import os
 import requests
@@ -14,7 +15,7 @@ from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
 API_URL = "https://outboundmessenger.com/api/"
-
+MAX_MESSAGE_COUNT = 50
 
 def get_token():
     """
@@ -48,7 +49,7 @@ def update_profile_url(user_pk, task_id, done=False):
     headers = {"Authorization": "Token " + get_token()}
     api_url = API_URL + "fburls/{}/".format(user_pk)
     data = {"pk": user_pk, "is_messaged": True,
-            "task_id": task_id, "done": done}
+            "task_id": task_id, "done": done, "updated_on": datetime.datetime.now(datetime.timezone.utc)}
     r = requests.post(api_url, data=data, headers=headers)
     print(r)
 
@@ -92,6 +93,15 @@ class MessengerWorker(QRunnable):
         self.args = args
         self.kwargs = kwargs
 
+    def check_message_count(self):
+        headers = {"Authorization": "Token " + get_token()}
+        api_url = API_URL + "fbmessageprofile/"
+        profiles = requests.get(api_url, headers=headers)
+
+        print("+++++++++++ Profiles +++++++++++++")
+        print("Message Count=", len(profiles.json()))
+
+        return len(profiles.json())
 
     @pyqtSlot()
     def run(self):
@@ -112,17 +122,31 @@ class MessengerWorker(QRunnable):
         password = get_facebook_account()["fb_pass"]
         print(username, password)
 
+        print(recipeints.json())
+        if self.check_message_count() >= MAX_MESSAGE_COUNT:
+            return
 
         messenger = Messenger(username, password, self.message)
 
+        recipient = None
         for recipient in recipeints.json():
             print(recipient)
             message_url = messenger.get_message_url(recipient["url"])
+            if self.check_message_count() >= MAX_MESSAGE_COUNT:
+                if messenger:
+                    messenger.close()
+
+                return
+
             messenger.send(message_url)
             update_profile_url(recipient["pk"], self.task_id)
             time.sleep(5)
 
-        update_profile_url(recipient["pk"], self.task_id, done=True)
+        print("Taks is Done!!!!")
+        print(recipient)
+
+        if recipient:
+            update_profile_url(recipient["pk"], self.task_id, done=True)
         messenger.close()
 
 

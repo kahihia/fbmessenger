@@ -208,10 +208,4 @@ class Collector():
 
 
 if __name__ == '__main__':
-    collector = Collector("georgegaucho@mail.com",
-                        "g30rg3g20ch0",
-                          "https://www.facebook.com/grantcardonefan/posts/10156060294808563")
-
-    data = collector.collect()
-    print(data)
-    collector.close()
+    print("Main")

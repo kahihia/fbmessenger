@@ -11624,3 +11624,8 @@ star {
 .download-desc{
   color:#b4abc7;
 }
+
+#client_status{
+  color:#EB5E28;
+  font-style:italic;
+}

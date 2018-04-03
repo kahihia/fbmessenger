@@ -71,12 +71,18 @@ def index(request):
                                                      is_deleted=False).count()
 
     stats = Stats.objects.filter(user=request.user)[0]
+    task_progress = TaskProgress.objects.filter(user=request.user)
+    sent_message = 0
+
+    for t_item in task_progress:
+        sent_message += t_item.sent
+        
     user_plan = UserPlan.objects.filter(user=request.user)[0]
 
 
     return render(request, "dashboard.html", {"accounts": accounts,
                                               "profile_urls": profile_urls,
-                                              "stats": stats,
+                                              "sent_message": sent_message,
                                               "user_plan": user_plan})
 
 

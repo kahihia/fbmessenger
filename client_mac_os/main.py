@@ -123,6 +123,7 @@ class MessengerWorker(QRunnable):
         print(username, password)
 
         print(recipeints.json())
+
         if self.check_message_count() >= MAX_MESSAGE_COUNT:
             return
 
@@ -145,7 +146,18 @@ class MessengerWorker(QRunnable):
         print("Taks is Done!!!!")
         print(recipient)
 
-        if recipient:
+        if recipient == None:
+            headers = {"Authorization": "Token " + get_token()}
+            api_url = API_URL + "fbmessageprofile/"
+            profiles = requests.get(api_url, headers=headers)
+            if len(profiles.json()) > 0:
+                for item in profiles.json():
+                    if item["task_id"] == self.task_id:
+                        print("Update Task as Done!", self.task_id)
+                        print(item["pk"], self.task_id)
+                        update_profile_url(item["pk"], self.task_id, done=True)
+
+        else:
             update_profile_url(recipient["pk"], self.task_id, done=True)
         messenger.close()
 

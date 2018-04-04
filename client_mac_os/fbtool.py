@@ -99,7 +99,10 @@ class Messenger():
 
     def close(self):
         print("Closing!")
-        self.browser.close()
+        try:
+            self.browser.close()
+        except:
+            pass
 
 
 
@@ -162,6 +165,7 @@ class Collector():
         self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
         time.sleep(self.loading_delay)
         time.sleep(5)
+        commentors = []
         try:
             comments_block = self.browser.find_element_by_xpath("//div[@class='UFIList']")
             view_more_key = '<a class="UFIPagerLink" href="#" role="button">View more comments</a>'
@@ -195,6 +199,7 @@ class Collector():
 
     def collect(self):
         self.browser.get(self.url)
+        print(self.url)
         commenters = self.get_commentors()
         # likers = self.get_likers()
 
@@ -204,7 +209,10 @@ class Collector():
 
     def close(self):
         print("Closing!")
-        self.browser.close()
+        try:
+            self.browser.close()
+        except:
+            pass
 
 
 if __name__ == '__main__':

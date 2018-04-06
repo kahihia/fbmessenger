@@ -7,6 +7,9 @@ $( document  ).ready(function() {
             check_messenger = $.isEmptyObject(response.messenger);
             check_collector = $.isEmptyObject(response.collector);
             client_status = response.client;
+            user_type = response.user_type;
+
+            $(".user_type").html(user_type)
 
             client_front = $("#client_status");
             if (client_status == true){

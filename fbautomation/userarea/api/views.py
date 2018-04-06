@@ -9,8 +9,10 @@ from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount, \
 
 from .serializers import FbProfileSerializer, TaskStatusSerializer, \
     FbAccountSerializer, FbUpdateSerializer, FbulrCraeteSerializer, \
-    EmptySerializer, FbMessageProfileSerializer
+    EmptySerializer, FbMessageProfileSerializer, SubscriptionSerializer
 
+from django.contrib.auth.models import User
+from pinax.stripe.models import Subscription
 
 class TaskStatusView(generics.ListAPIView):
     serializer_class = TaskStatusSerializer
@@ -27,9 +29,15 @@ class TaskStatusView(generics.ListAPIView):
 
         return qs
 
+class SubscriptionApiView(generics.ListAPIView):
+    serializer_class = SubscriptionSerializer
+
+    def get_queryset(self):
+        qs = self.request.user.customer.subscription_set.all()
+        return qs
+
 class FbAccountApiView(generics.ListAPIView):
     serializer_class = FbAccountSerializer
-
 
     def get_queryset(self):
         qs = FacebookAccount.objects.filter(user=self.request.user)

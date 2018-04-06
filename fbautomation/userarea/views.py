@@ -19,6 +19,7 @@ from django.core.cache import cache
 from django.template.defaultfilters import date as filter_date
 
 from pinax.stripe.actions import customers
+from pinax.stripe.models import Subscription
 
 from .forms import SignupForm, PasswordChangeForm, UserForm, UserAvatarForm, \
     FacebookAccountForm, BulkUrlform, FacebookProfileForm, MessageForm, \
@@ -78,12 +79,19 @@ def index(request):
         sent_message += t_item.sent
         
     user_plan = UserPlan.objects.filter(user=request.user)[0]
-
+    
+    today = datetime.datetime.now().strftime("%Y-%m-%d 00:00:00")
+    all_sub = request.user.customer.subscription_set.filter(current_period_end__gte=today)
+    user_type = ""
+    for sub in all_sub:
+        user_type = sub.plan_display()
+        break
 
     return render(request, "dashboard.html", {"accounts": accounts,
                                               "profile_urls": profile_urls,
                                               "sent_message": sent_message,
-                                              "user_plan": user_plan})
+                                              "user_plan": user_plan,
+                                              "user_type": user_type})
 
 
 def signup(request):
@@ -744,9 +752,20 @@ def ajax_progress(request):
 
     client_status = client.online
 
+    today = datetime.datetime.now().strftime("%Y-%m-%d 00:00:00")
+    all_sub = request.user.customer.subscription_set.filter(current_period_end__gte=today)
+    user_type = ""
+    for sub in all_sub:
+        user_type = sub.plan_display()
+        break
+
+    user_type_str = ""
+
+
     progress = {"messenger": {task.id: task.jsonify() for task in tasks},
                 "collector": {collector.id: collector.jsonify() for collector in collectors},
-                "client": client_status}
+                "client": client_status,
+                "user_type" : user_type}
     # print("===================================")
     # print(progress)
     # print("---------------------------------")

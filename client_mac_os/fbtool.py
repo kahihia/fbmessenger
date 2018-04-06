@@ -9,7 +9,7 @@ import time
 import os, sys
 
 DRIVER_PATH = "chromedriver"
-
+MAX_PROFILE_COUNT = 100
 class Messenger():
 
     def __init__(self, username, password, message, proxy=None, delay_on_page=10,
@@ -107,13 +107,14 @@ class Messenger():
 
 
 class Collector():
-    def __init__(self, username, password, url, proxy=None, loading_delay=10):
+    def __init__(self, username, password, url, subscription, proxy=None, loading_delay=10):
 
         self.username = username
         self.password = password
         self.url = url
         self.proxy = proxy
         self.loading_delay = loading_delay
+        self.subscription = subscription
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
@@ -197,15 +198,51 @@ class Collector():
         likers = self.filter_users(raw_likers)
         return likers
 
+    def get_group_profiles(self):
+        self.browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+        time.sleep(self.loading_delay)
+        time.sleep(5)
+        group_profiles = []
+        try:
+            group_profiles_block = self.browser.find_element_by_xpath("//div[@id='groupsMemberSection_recently_joined']")
+            
+            see_more_key = '<span class="uiMorePagerLoader'
+            while see_more_key in group_profiles_block.get_attribute('innerHTML'):
+                print("See more button found")
+                see_more_obj = group_profiles_block.find_element_by_xpath(".//a[contains(text(), 'See More')]")
+                self.browser.execute_script('window.scrollTo(0, ' + str(see_more_obj.location['y']) + ');')
+                time.sleep(6)
+
+                profile_count = len(group_profiles_block.find_elements_by_xpath(".//div[contains(@class, 'fbProfileBrowserList')]/ul/div/a"))
+                print (profile_count, " Profiles are checked!")
+                if profile_count > MAX_PROFILE_COUNT:
+                    break
+
+            raw_group_profiles = [[e.get_attribute('href'), e.text] for e in group_profiles_block.find_elements_by_xpath(".//div[contains(@class, 'fbProfileBrowserList')]/ul//div[contains(@class, 'uiProfileBlockContent')]/div/div/div/a")]
+            group_profiles = self.filter_users(raw_group_profiles)
+        except Exception as err:
+            print(err)
+            self.close()
+        return group_profiles
+
     def collect(self):
         self.browser.get(self.url)
         print(self.url)
-        commenters = self.get_commentors()
+        if "/groups/" not in self.url:
+            commenters = self.get_commentors()
+            return commenters
+        else:
+            if len(self.subscription) > 0:
+                group_profiles = self.get_group_profiles()
+                return group_profiles
+            else:
+                print ("user don't have permission to get group profiles")
+
         # likers = self.get_likers()
 
         # collected = commenters + likers
         # return collected
-        return commenters
+        
 
     def close(self):
         print("Closing!")

@@ -15,6 +15,7 @@ from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
 API_URL = "https://outboundmessenger.com/api/"
+
 MAX_MESSAGE_COUNT = 50
 
 def get_token():
@@ -167,12 +168,13 @@ class CollectorWorker(QRunnable):
     Facbook profiles collector worker thread.
     """
 
-    def __init__(self, task_id, url, tag, *args, **kwargs):
+    def __init__(self, task_id, url, tag, subscription, *args, **kwargs):
         super(CollectorWorker, self).__init__()
 
         self.task_id = task_id
         self.url = url
         self.tag = tag
+        self.subscription = subscription
         self.args = args
         self.kwargs = kwargs
 
@@ -189,11 +191,11 @@ class CollectorWorker(QRunnable):
         username = get_facebook_account()["fb_user"]
         password = get_facebook_account()["fb_pass"]
 
-        collector = Collector(username, password, self.url)
-
+        collector = Collector(username, password, self.url, self.subscription)
+        
         data = collector.collect()
         print(data)
-
+        
         collector.close()
 
         if data:
@@ -207,8 +209,6 @@ class CollectorWorker(QRunnable):
                                    profile[0],  profile[1], self.tag, done)
         else:
             empty_request(self.task_id)
-
-
 
 
 class MainWindow(QMainWindow):
@@ -260,7 +260,12 @@ class MainWindow(QMainWindow):
         Calling workers depending
         on task type.
         """
+
         if get_token():
+            headers = {"Authorization": "Token " + get_token()}
+            r = requests.get(API_URL + "subscription/", headers=headers)
+            subscription = r.json()
+
             headers = {"Authorization": "Token " + get_token()}
             r = requests.get(API_URL + "taskstatus/", headers=headers)
 
@@ -280,7 +285,8 @@ class MainWindow(QMainWindow):
                     if data["task_type"] == "c":
                         collector_worker = CollectorWorker(data["task_id"],
                                                         data["url"],
-                                                        data["tag"])
+                                                        data["tag"],
+                                                        subscription)
                         self.threadpool.start(collector_worker)
 
                     self.task_history.append(data["task_id"])

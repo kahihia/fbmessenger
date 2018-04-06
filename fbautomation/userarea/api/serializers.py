@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from userarea.models import FacebookProfileUrl, TaskStatus, FacebookAccount
+from django.contrib.auth.models import User
+from pinax.stripe.models import Subscription, Plan
 import datetime
 
 class TaskStatusSerializer(serializers.ModelSerializer):
@@ -21,6 +23,14 @@ class TaskStatusSerializer(serializers.ModelSerializer):
         fields = ("task_id", "task_type",
                   "message", "url", "tag", "in_progress", "created_on")
 
+class SubscriptionSerializer(serializers.ModelSerializer):
+    current_period_start = serializers.DateTimeField(read_only=True)
+    current_period_end = serializers.DateTimeField(read_only=True)
+    plan = serializers.CharField(read_only=True, source='plan.name')
+
+    class Meta:
+        model = Subscription
+        fields = ("current_period_start", "current_period_end", "plan")
 
 class FbAccountSerializer(serializers.ModelSerializer):
     fb_user = serializers.CharField(read_only=True)

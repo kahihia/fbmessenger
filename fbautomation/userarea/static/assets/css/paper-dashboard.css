@@ -11633,3 +11633,23 @@ star {
 .user_type {
   color:#EB5E28;
 }
+
+.collector_notification{
+  display: none;
+  text-align: right;
+  color:red;
+}
+
+.collector_notification a{
+  background-color:#68B3C8;
+  color: #FFFFFF;
+  border-color: #68B3C8;
+}
+
+.collector_notification a:hover,
+.collector_notification a:active,
+.collector_notification a:focus {
+  background-color: #429cb6!important;
+  color: #FFFFFF!important;
+  border-color: #429cb6!important;
+}

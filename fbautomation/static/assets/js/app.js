@@ -11,6 +11,11 @@ $( document  ).ready(function() {
 
             $(".user_type").html(user_type);
 
+            if(user_type != "")
+                $(".collector_notification").hide();
+            else
+                $(".collector_notification").show();
+
             client_front = $("#client_status");
             if (client_status == true){
                 client_front.html("Online");

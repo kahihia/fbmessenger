@@ -9,7 +9,7 @@ import time
 import os, sys
 
 DRIVER_PATH = "chromedriver"
-MAX_PROFILE_COUNT = 100
+MAX_PROFILE_COUNT = 5000
 class Messenger():
 
     def __init__(self, username, password, message, proxy=None, delay_on_page=10,

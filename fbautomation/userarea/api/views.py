@@ -127,11 +127,12 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
 
             progress.save()
 
-        task_status = TaskStatus.objects.filter(task_id=task_id)
+        task_status = TaskStatus.objects.filter(task_id=task_id, task_type='m')
 
         if done == 'True':
             print ("-----------------------> FB PROFILE TASK DONE------------------>")
             if task_status:
+                print(task_status)
                 task_status[0].in_progress = True
                 task_status[0].save()
 

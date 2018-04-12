@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
-API_URL = "https://outboundmessenger.com/api/"
+API_URL = "https://app.outboundmessenger.com/api/"
 
 MAX_MESSAGE_COUNT = 50
 

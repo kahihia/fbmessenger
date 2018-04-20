@@ -7,6 +7,8 @@ import sys
 import os
 import requests
 import time
+import fbtool
+
 from fbtool import Messenger, Collector
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit
@@ -14,9 +16,12 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
-API_URL = "https://app.outboundmessenger.com/api/"
+# API_URL = "https://app.outboundmessenger.com/api/"
+API_URL = "http://127.0.0.1:8000/api/"
 
-MAX_MESSAGE_COUNT = 50
+ACCOUNT_STATUS_ACTIVE = 1
+ACCOUNT_STATUS_NOT_ACTIVE = 0
+ACCOUNT_STATUS_INCORRECT = -1
 
 def get_token():
     """
@@ -39,8 +44,20 @@ def get_facebook_account():
     headers = {"Authorization": "Token " + get_token()}
     api_url = API_URL + "fbaccount/"
     r = requests.get(api_url, headers=headers)
-    return r.json()[0]
+    return r.json()
 
+
+def update_facebook_account(account_status):
+    """
+    Updating facebook account status.
+    """
+    headers = {"Authorization": "Token " + get_token()}
+    api_url = API_URL + "fbaccount/"
+
+    today = datetime.datetime.now(datetime.timezone.utc)
+    data = {"account_status": account_status, "disabled_on" : today.strftime("%Y-%m-%d %H:%M:%S")}
+    r = requests.post(api_url, data=data, headers=headers)
+    print("Update FB Account = ", r.status_code)
 
 
 def update_profile_url(user_pk, task_id, done=False):
@@ -55,16 +72,25 @@ def update_profile_url(user_pk, task_id, done=False):
     print(r)
 
 
-def create_profile_url(task_id, url, full_name, tag, done=False):
+def create_profile_url(task_id, profile, tag, done=False):
     """
     Create facebok url profile.
     """
+    url = profile[0]
+    full_name = profile[1]
+    image_path = profile[2]
+    desc_str = profile[3]
+    date_to_be_added = profile[4]
+
     headers = {"Authorization": "Token " + get_token()}
     api_url = API_URL + "fburlcreate/"
     data = {"task_id": task_id,
             "url": url,
             "tag": tag,
             "full_name": full_name,
+            "image_path": image_path,
+            "date_to_be_added": date_to_be_added,
+            "desc": desc_str,
             "done": done}
     print(data)
     r = requests.post(api_url, data=data, headers=headers)
@@ -99,7 +125,7 @@ class MessengerWorker(QRunnable):
         api_url = API_URL + "fbmessageprofile/"
         profiles = requests.get(api_url, headers=headers)
 
-        print("+++++++++++ Profiles +++++++++++++")
+        # print("+++++++++++ Profiles +++++++++++++")
         print("Message Count=", len(profiles.json()))
 
         return len(profiles.json())
@@ -121,31 +147,60 @@ class MessengerWorker(QRunnable):
 
         username = get_facebook_account()["fb_user"]
         password = get_facebook_account()["fb_pass"]
-        print(username, password)
+        account_status = get_facebook_account()["account_status"]
+        max_message_count = get_facebook_account()["max_message_count"]
+        disabled_on = get_facebook_account()["disabled_on"]
 
-        print(recipeints.json())
+        # print(username, password)
 
-        if self.check_message_count() >= MAX_MESSAGE_COUNT:
-            return
+        today_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        today = datetime.datetime.strptime(today_str, '%Y-%m-%d %H:%M:%S')
+        t_date = datetime.datetime.strptime(disabled_on, '%Y-%m-%d %H:%M:%S')
+        delta_time = (today - t_date).total_seconds() / 3600.0
+
+        if (account_status == ACCOUNT_STATUS_NOT_ACTIVE) or (self.check_message_count() >= max_message_count):
+            print("Today = ", today.strftime("%Y-%m-%d %H:%M:%S"))
+            print("Last = ", t_date.strftime("%Y-%m-%d %H:%M:%S"))
+
+            print("Spent Delta Time = ", delta_time)
+
+            if (delta_time < 24):
+                print("Account is not active!")
+                print("You have to wait for {} hours".format(24 - int(delta_time)))
+                return
 
         messenger = Messenger(username, password, self.message)
+        if messenger.check_logged_in() is False:
+            print("Facebook Account is not correct. Please check username and password!")
+            update_facebook_account(ACCOUNT_STATUS_INCORRECT)
+            messenger.close()
+            return
+        else:
+            if account_status == ACCOUNT_STATUS_INCORRECT:
+                update_facebook_account(ACCOUNT_STATUS_ACTIVE)
 
         recipient = None
         for recipient in recipeints.json():
-            print(recipient)
+            # print(recipient)
             message_url = messenger.get_message_url(recipient["url"])
-            if self.check_message_count() >= MAX_MESSAGE_COUNT:
+            if self.check_message_count() >= max_message_count:
+                update_facebook_account(ACCOUNT_STATUS_NOT_ACTIVE)
                 if messenger:
                     messenger.close()
 
                 return
 
-            messenger.send(message_url)
+            if messenger.send(message_url) == fbtool.ERROR_SECURITY_CODE:
+                print("Security Code was Founded!")
+                update_facebook_account(ACCOUNT_STATUS_NOT_ACTIVE)
+            else:
+                update_facebook_account(ACCOUNT_STATUS_ACTIVE)
+
             update_profile_url(recipient["pk"], self.task_id)
             time.sleep(5)
 
         print("Taks is Done!!!!")
-        print(recipient)
+        # print(recipient)
 
         if recipient == None:
             headers = {"Authorization": "Token " + get_token()}
@@ -190,12 +245,20 @@ class CollectorWorker(QRunnable):
 
         username = get_facebook_account()["fb_user"]
         password = get_facebook_account()["fb_pass"]
+        max_profile_count = get_facebook_account()["max_profile_count"]
+        account_status = get_facebook_account()["account_status"]
 
-        collector = Collector(username, password, self.url, self.subscription)
-        
+        collector = Collector(username, password, self.url, self.subscription, max_profile_count)
+        if collector.check_logged_in() is False:
+            print("Facebook Account is not correct. Please check username and password!")
+            update_facebook_account(ACCOUNT_STATUS_INCORRECT)
+            return
+        else:
+            if account_status == ACCOUNT_STATUS_INCORRECT:
+                update_facebook_account(ACCOUNT_STATUS_ACTIVE)
+
         data = collector.collect()
-        print(data)
-        
+
         collector.close()
 
         if data:
@@ -206,7 +269,7 @@ class CollectorWorker(QRunnable):
                 else:
                     done = False
                 create_profile_url(self.task_id,
-                                   profile[0],  profile[1], self.tag, done)
+                                   profile, self.tag, done)
         else:
             empty_request(self.task_id)
 

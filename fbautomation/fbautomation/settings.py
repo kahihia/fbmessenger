@@ -174,7 +174,3 @@ PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT = "pinax_stripe_subscription_create"
 
 # Pages that requires subscreption.
 PINAX_STRIPE_SUBSCRIPTION_REQUIRED_URLS = ["messenger", "collector"]
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True

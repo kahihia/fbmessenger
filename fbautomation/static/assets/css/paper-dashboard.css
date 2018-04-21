@@ -11584,3 +11584,39 @@ star {
   background-color: #fefde5 !important;
 }
 
+.user_type,
+.fb_account_status {
+  color:#EB5E28;
+}
+
+.wait_time_note{
+  color:#ED4663;
+  padding-left: 30px;
+  font-size:12px;
+}
+
+.profile-image{
+  width:40px;
+  height:40px;
+}
+
+
+.collector_notification{
+  display: none;
+  text-align: right;
+  color:red;
+}
+
+.collector_notification a{
+  background-color:#68B3C8;
+  color: #FFFFFF;
+  border-color: #68B3C8;
+}
+
+.collector_notification a:hover,
+.collector_notification a:active,
+.collector_notification a:focus {
+  background-color: #429cb6!important;
+  color: #FFFFFF!important;
+  border-color: #429cb6!important;
+}

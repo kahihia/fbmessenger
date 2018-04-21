@@ -29,7 +29,7 @@ class Messenger():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 
@@ -137,7 +137,7 @@ class Collector():
 
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-notifications')
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         if self.proxy:
             options.add_argument("--proxy-server={}".format(proxy))
 
@@ -328,13 +328,11 @@ class Collector():
             commenters = self.get_commentors()
             return commenters
         else:
-            group_profiles = self.get_group_profiles()
-            return group_profiles
-            # if len(self.subscription) > 0:
-            #     group_profiles = self.get_group_profiles()
-            #     return group_profiles
-            # else:
-            #     print ("user don't have permission to get group profiles")
+            if len(self.subscription) > 0:
+                group_profiles = self.get_group_profiles()
+                return group_profiles
+            else:
+                print ("user don't have permission to get group profiles")
 
         # likers = self.get_likers()
 

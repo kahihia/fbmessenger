@@ -35,10 +35,18 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class FbAccountSerializer(serializers.ModelSerializer):
     fb_user = serializers.CharField(read_only=True)
     fb_pass = serializers.CharField(read_only=True)
+    max_message_count = serializers.IntegerField(read_only=True)
+    max_profile_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = FacebookAccount
-        fields = ("fb_user", "fb_pass")
+        fields = ("fb_user", "fb_pass", "account_status", "disabled_on", "user_id", "max_message_count", "max_profile_count")
+
+    def update(self, instance, validated_data):
+        instance.account_status = validated_data.get('account_status', instance.account_status)
+        instance.disabled_on = validated_data.get('disabled_on', instance.disabled_on)
+        instance.save()
+        return instance
 
 class FbMessageProfileSerializer(serializers.ModelSerializer):
     pk = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -56,10 +64,13 @@ class FbulrCraeteSerializer(serializers.ModelSerializer):
     url = serializers.URLField()
     full_name = serializers.CharField()
     tag = serializers.CharField()
+    image_path = serializers.URLField(allow_blank=True)
+    date_to_be_added = serializers.CharField(allow_blank=True)
+    desc = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = FacebookProfileUrl
-        fields = ("url", "full_name", "tag")
+        fields = ("url", "full_name", "tag", "image_path", "date_to_be_added", "desc")
 
 
 class FbProfileSerializer(serializers.ModelSerializer):

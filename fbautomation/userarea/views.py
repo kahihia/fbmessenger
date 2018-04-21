@@ -33,7 +33,7 @@ from rest_framework.authtoken.models import Token
 from .tasks import send_message, collect_urls
 
 import datetime
-
+from dateutil import parser
 
 class CreateFacebookAccount(generic.CreateView):
     form_class = FacebookAccountForm
@@ -490,11 +490,13 @@ def ajax_profile(request):
     except EmptyPage:
         profiles = paginator.page(paginator.num_pages)
 
-
     rows = [
         {
             "id": profile.id,
             "tag": profile.tag,
+            "image_path": profile.image_path,
+            "desc": profile.desc,
+            "date_to_be_added": profile.date_to_be_added,
             "full_name": profile.full_name,
             "url": profile.url,
             "is_messaged": profile.is_messaged,
@@ -759,13 +761,19 @@ def ajax_progress(request):
         user_type = sub.plan_display()
         break
 
-    user_type_str = ""
+    fbAccount = FacebookAccount.objects.filter(user=request.user)[0]
+    fb_account_status = fbAccount.account_status
 
+    today = datetime.datetime.now(datetime.timezone.utc)
+    t_date = fbAccount.disabled_on
+    delta_time = (today - t_date).total_seconds() / 3600.0
 
     progress = {"messenger": {task.id: task.jsonify() for task in tasks},
                 "collector": {collector.id: collector.jsonify() for collector in collectors},
                 "client": client_status,
-                "user_type" : user_type}
+                "user_type": user_type,
+                "fb_account_status": fb_account_status,
+                "delta_time": delta_time}
     # print("===================================")
     # print(progress)
     # print("---------------------------------")

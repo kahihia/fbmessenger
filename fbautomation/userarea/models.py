@@ -38,6 +38,10 @@ class FacebookProfileUrl(models.Model):
     updated_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
 
+    image_path = models.URLField(max_length=500, null=True, blank=True)
+    date_to_be_added = models.CharField(max_length=50, null=True, blank=True)
+    desc = models.TextField(null=True, blank=True)
+
     class Meta:
         ordering = ["id"]
 
@@ -77,6 +81,11 @@ class FacebookAccount(models.Model):
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
 
+    account_status = models.IntegerField(default=1, null=True, blank=True)
+    disabled_on = models.DateTimeField(default=datetime.datetime.now,
+                                      null=True, blank=True)
+    max_message_count = models.IntegerField(default=45, null=True, blank=True)
+    max_profile_count = models.IntegerField(default=2000, null=True, blank=True)
 
     class Meta:
         ordering = ["-id"]

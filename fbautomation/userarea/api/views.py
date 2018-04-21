@@ -13,6 +13,7 @@ from .serializers import FbProfileSerializer, TaskStatusSerializer, \
 
 from django.contrib.auth.models import User
 from pinax.stripe.models import Subscription
+from django.shortcuts import get_object_or_404
 
 class TaskStatusView(generics.ListAPIView):
     serializer_class = TaskStatusSerializer
@@ -29,6 +30,7 @@ class TaskStatusView(generics.ListAPIView):
 
         return qs
 
+
 class SubscriptionApiView(generics.ListAPIView):
     serializer_class = SubscriptionSerializer
 
@@ -36,12 +38,18 @@ class SubscriptionApiView(generics.ListAPIView):
         qs = self.request.user.customer.subscription_set.all()
         return qs
 
-class FbAccountApiView(generics.ListAPIView):
+
+class FbAccountApiView(generics.RetrieveUpdateAPIView):
     serializer_class = FbAccountSerializer
 
-    def get_queryset(self):
-        qs = FacebookAccount.objects.filter(user=self.request.user)
-        return qs
+    def get_object(self):
+        user_id = self.request.user.id
+        qs = FacebookAccount.objects.filter(user_id=user_id)
+        return get_object_or_404(FacebookAccount, user_id=user_id)
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
 
 class FbMessageProfileApiView(generics.ListAPIView):
     serializer_class = FbMessageProfileSerializer
@@ -53,6 +61,7 @@ class FbMessageProfileApiView(generics.ListAPIView):
                 updated_on__gte=today)
 
         return qs
+
 
 class FBurlCreate(generics.CreateAPIView):
     serializer_class = FbulrCraeteSerializer
@@ -76,12 +85,12 @@ class FBurlCreate(generics.CreateAPIView):
             if task_status:
                 task_status[0].in_progress = True
                 task_status[0].save()
+
         return self.create(request, *args, **kwargs)
 
 
 class FbProfileApiView(mixins.CreateModelMixin, generics.ListAPIView):
     serializer_class = FbProfileSerializer
-
 
     def get_queryset(self):
         query = self.request.GET.get("task_id")
@@ -103,7 +112,6 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
     lookup_field = "pk"
     serializer_class = FbUpdateSerializer
 
-
     def get_queryset(self):
         return FacebookProfileUrl.objects.filter(user=self.request.user)
 
@@ -120,7 +128,7 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
         user_plan.save()
 
         progress = TaskProgress.objects.filter(pk=task_id)[0]
-        
+
         if progress:
             if done == 'False':
                 progress.sent += 1

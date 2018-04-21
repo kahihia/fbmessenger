@@ -25,7 +25,7 @@ SECRET_KEY = 'l!*@4puy-8=%t%btn*s@!1@(t&zu1#75=yj08mi#pqmc^pe8$f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "52.53.110.158", "outboundmessenger.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "52.53.110.158", "app.outboundmessenger.com"]
 
 
 # Application definition
@@ -174,3 +174,7 @@ PINAX_STRIPE_SUBSCRIPTION_REQUIRED_REDIRECT = "pinax_stripe_subscription_create"
 
 # Pages that requires subscreption.
 PINAX_STRIPE_SUBSCRIPTION_REQUIRED_URLS = ["messenger", "collector"]
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True

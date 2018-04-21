@@ -257,8 +257,8 @@ class CollectorWorker(QRunnable):
                 update_facebook_account(ACCOUNT_STATUS_ACTIVE)
 
         data = collector.collect()
-
         collector.close()
+        print ("Collector Task is done!")
 
         if data:
             data_len = len(data) - 1

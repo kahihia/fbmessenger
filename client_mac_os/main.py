@@ -16,8 +16,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize, QThreadPool, QRunnable, pyqtSlot, QTimer
 
 # our api url.
-# API_URL = "https://app.outboundmessenger.com/api/"
-API_URL = "http://127.0.0.1:8000/api/"
+API_URL = "https://app.outboundmessenger.com/api/"
 
 ACCOUNT_STATUS_ACTIVE = 1
 ACCOUNT_STATUS_NOT_ACTIVE = 0

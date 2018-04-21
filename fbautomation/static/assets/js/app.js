@@ -8,7 +8,19 @@ $( document  ).ready(function() {
             check_collector = $.isEmptyObject(response.collector);
             client_status = response.client;
             user_type = response.user_type;
+            fb_account_status = response.fb_account_status;
+            delta_time = response.delta_time;
 
+            $(".wait_time_note").html("");
+            $(".fb_account_status").html("");
+
+            if(fb_account_status == -1) {
+                $(".fb_account_status").html("Invalid Facebook Account!");
+            } 
+            else if(fb_account_status == 0) {
+                $(".wait_time_note").html("*Account is not available now. You have to wait for " + (24 - parseInt(delta_time)) +" hours.*");
+            }
+            
             $(".user_type").html(user_type);
 
             if(user_type != "")
@@ -633,6 +645,19 @@ $( document  ).ready(function() {
             }
         };
     });
+    
+    
+    function imageFormatter(value, row, index){
+        if(row.image_path != "") 
+            return '<img class="profile-image" src="' + row.image_path +'"></div>'
+    }
+
+    function dateAddFormatter(value, row, index){
+        if(row.date_to_be_added != "") {
+            date_list = row.date_to_be_added.split("-")
+            return date_list[2] + "/" + date_list[1] + "/" + date_list[0]
+        }
+    }
 
     function messagedFormatter(value, row, index){
         if(row.is_messaged == true){

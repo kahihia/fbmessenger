@@ -18,7 +18,10 @@ $( document  ).ready(function() {
                 $(".fb_account_status").html("Invalid Facebook Account!");
             } 
             else if(fb_account_status == 0) {
-                $(".wait_time_note").html("*Account is not available now. You have to wait for " + (24 - parseInt(delta_time)) +" hours.*");
+                wait_time = 24 - parseInt(delta_time);
+                if (wait_time > 0) {
+                    $(".wait_time_note").html("*Account is not available now. You have to wait for " + wait_time +" hours.*");
+                }
             }
             
             $(".user_type").html(user_type);

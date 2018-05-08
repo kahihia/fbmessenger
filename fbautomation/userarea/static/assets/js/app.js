@@ -717,13 +717,13 @@ $( document  ).ready(function() {
 
         if( row.in_pause == false) {
             html_code = [
-                '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action pause" href="javascript:void(0)">',
+                '<a rel="tooltip" title="Pause" class="btn btn-simple btn-warning btn-icon table-action pause" href="javascript:void(0)">',
                     '<i class="ti-control-pause"></i>',
                 '</a>',
             ]
         } else {
             html_code = [
-                '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action play" href="javascript:void(0)">',
+                '<a rel="tooltip" title="Play" class="btn btn-simple btn-warning btn-icon table-action play" href="javascript:void(0)">',
                     '<i class="ti-control-play"></i>',
                 '</a>'
             ]

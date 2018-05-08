@@ -712,6 +712,9 @@ $( document  ).ready(function() {
 
     function historyOperateFormatter(value, row, index) {
         html_code = [];
+        if(row.done == true)
+            return "";
+
         if( row.in_pause == false) {
             html_code = [
                 '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action pause" href="javascript:void(0)">',

@@ -247,6 +247,7 @@ class TaskStatus(models.Model):
                                  blank=True, null=True)
 
     in_progress = models.BooleanField(default=False)
+    in_pause = models.BooleanField(default=False)
     created_on = models.DateTimeField(default=datetime.datetime.now,
                                       null=True, blank=True)
 

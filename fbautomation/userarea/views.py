@@ -542,10 +542,10 @@ def ajax_messenger_history(request):
     except EmptyPage:
         profiles = paginator.page(paginator.num_pages)
 
-
     rows = [
         {
             "id": profile.id,
+            "in_pause": TaskStatus.objects.filter(task_id=profile.id, task_type="m")[0].in_pause,
             "name": profile.name,
             "sent": profile.sent,
             "total": profile.total,
@@ -738,6 +738,7 @@ def ajax_progress(request):
 
     tasks = TaskProgress.objects.filter(user=request.user,
                                            done=False)
+
     collectors = CollectProgress.objects.filter(user=request.user,
                                                done=False)
 

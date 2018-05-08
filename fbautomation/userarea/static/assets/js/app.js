@@ -4,6 +4,7 @@ $( document  ).ready(function() {
 
     function check_progress(){
         $.getJSON("/ajax/progress/", function(response){
+            // console.log(response);
             check_messenger = $.isEmptyObject(response.messenger);
             check_collector = $.isEmptyObject(response.collector);
             client_status = response.client;
@@ -623,6 +624,30 @@ $( document  ).ready(function() {
 
 
 // tables
+        window.historyPauseEvents = {
+            'click .play': function (e, value, row, index) {
+                $.ajax({
+                    url: "/api/taskpause/" + row.id + "/",
+                    method: "POST",
+                    data: {csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                        "in_pause": false },
+                });
+                window.location.href = "/history/messenger/";
+
+            },
+            'click .pause': function (e, value, row, index) {
+                console.log(row, index, "Pause");
+                $.ajax({
+                    url: "/api/taskpause/" + row.id + "/",
+                    method: "POST",
+                    data: {csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                        "in_pause": true},
+                });
+
+                window.location.href = "/history/messenger/";
+            }
+        };
+
         window.operateEvents = {
             'click .edit': function (e, value, row, index) {
                 window.location.replace("/update/fburl/"+ row.id +"")
@@ -680,6 +705,26 @@ $( document  ).ready(function() {
         return mark
 
     }
+
+
+    function historyOperateFormatter(value, row, index) {
+        html_code = [];
+        if( row.in_pause == false) {
+            html_code = [
+                '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action pause" href="javascript:void(0)">',
+                    '<i class="ti-control-pause"></i>',
+                '</a>',
+            ]
+        } else {
+            html_code = [
+                '<a rel="tooltip" title="Edit" class="btn btn-simple btn-warning btn-icon table-action play" href="javascript:void(0)">',
+                    '<i class="ti-control-play"></i>',
+                '</a>'
+            ]
+        }
+        return html_code.join('');
+    }
+
 
     function operateFormatter(value, row, index) {
         return [

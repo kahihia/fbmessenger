@@ -15,20 +15,34 @@ from django.contrib.auth.models import User
 from pinax.stripe.models import Subscription
 from django.shortcuts import get_object_or_404
 
+
 class TaskStatusView(generics.ListAPIView):
     serializer_class = TaskStatusSerializer
-
 
     def get_queryset(self):
         qs = TaskStatus.objects.filter(user=self.request.user,
                                        in_progress=False)
 
-        client = Client.objects.filter(user=self.request.user) #, online=False)
+        client = Client.objects.filter(
+            user=self.request.user)  # , online=False)
         if client:
             client[0].online = True
             client[0].save()
 
         return qs
+
+
+class TaskPauseView(generics.RetrieveUpdateAPIView):
+    serializer_class = TaskStatusSerializer
+
+    def get_object(self):
+        task_id = self.kwargs["task_id"]
+        print(task_id)
+        qs = TaskStatus.objects.filter(task_id=task_id, task_type='m')
+        return qs[0]
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class SubscriptionApiView(generics.ListAPIView):
@@ -57,8 +71,8 @@ class FbMessageProfileApiView(generics.ListAPIView):
     def get_queryset(self):
         today = datetime.datetime.now().strftime("%Y-%m-%d 00:00:00")
         qs = FacebookProfileUrl.objects.filter(user=self.request.user,
-                is_messaged=True,
-                updated_on__gte=today)
+                                               is_messaged=True,
+                                               updated_on__gte=today)
 
         return qs
 
@@ -138,7 +152,7 @@ class FacebookProfileApiView(generics.RetrieveUpdateAPIView):
         task_status = TaskStatus.objects.filter(task_id=task_id, task_type='m')
 
         if done == 'True':
-            print ("-----------------------> FB PROFILE TASK DONE------------------>")
+            print("-----------------------> FB PROFILE TASK DONE------------------>")
             if task_status:
                 print(task_status)
                 task_status[0].in_progress = True
@@ -163,7 +177,7 @@ class EmptyView(generics.GenericAPIView):
         done = request.POST.get("done")
         task_status = TaskStatus.objects.filter(task_id=task_id)
         if done:
-            print ("-----------------------> EMPTY DONE------------------>")
+            print("-----------------------> EMPTY DONE------------------>")
             if progress:
                 progress.done = True
                 progress.save()
@@ -171,4 +185,3 @@ class EmptyView(generics.GenericAPIView):
             if task_status:
                 task_status[0].in_progress = True
                 task_status[0].save()
-

@@ -338,18 +338,21 @@ class MainWindow(QMainWindow):
                     continue
 
                 if data["task_id"] not in self.task_history:
-                    if data["task_type"] == "m":
-                        print(data["task_id"])
-                        messenger_worker = MessengerWorker(data["task_id"],
-                                                        data["message"])
-                        self.threadpool.start(messenger_worker)
+                    if data["in_pause"] == True:
+                        print("Task {} is paused.".format(data["task_id"]))
+                    else:
+                        if data["task_type"] == "m":
+                            print(data["task_id"])
+                            messenger_worker = MessengerWorker(data["task_id"],
+                                                            data["message"])
+                            self.threadpool.start(messenger_worker)
 
-                    if data["task_type"] == "c":
-                        collector_worker = CollectorWorker(data["task_id"],
-                                                        data["url"],
-                                                        data["tag"],
-                                                        subscription)
-                        self.threadpool.start(collector_worker)
+                        if data["task_type"] == "c":
+                            collector_worker = CollectorWorker(data["task_id"],
+                                                            data["url"],
+                                                            data["tag"],
+                                                            subscription)
+                            self.threadpool.start(collector_worker)
 
                     self.task_history.append(data["task_id"])
 
@@ -359,7 +362,6 @@ class MainWindow(QMainWindow):
         print(self.token_file, "Saving... from button")
         with open(self.token_file, "w") as f:
             f.write(self.token_line.text())
-
 
 
 if __name__ == "__main__":

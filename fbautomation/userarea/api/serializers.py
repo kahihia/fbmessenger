@@ -15,13 +15,23 @@ class TaskStatusSerializer(serializers.ModelSerializer):
     message = serializers.CharField(read_only=True)
     url = serializers.URLField(read_only=True)
     tag = serializers.CharField(read_only=True)
-    in_progress = serializers.BooleanField()
+    in_progress = serializers.BooleanField(read_only=True)
+    in_pause = serializers.BooleanField()
     created_on = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = TaskStatus
-        fields = ("task_id", "task_type",
-                  "message", "url", "tag", "in_progress", "created_on")
+        fields = ("task_id", "task_type", "message", "url",
+                  "tag", "in_progress", "in_pause", "created_on")
+
+    def update(self, instance, validated_data):
+        print("+++++++++++++Update Pause+++++++++++++++")
+        print (instance)
+        print (validated_data)
+
+        instance.in_pause = validated_data.get('in_pause', instance.in_pause)
+        instance.save()
+        return instance
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     current_period_start = serializers.DateTimeField(read_only=True)

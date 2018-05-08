@@ -13,7 +13,7 @@
 	                            <div class="card-content table-responsive table-full-width">
 
 
-<div class="toolbar">
+<div class="toolbar">{% csrf_token %}
     <!--Here you can write extra buttons/actions for the toolbar-->
                                                 </div>
 <table id="messenger-history" class="table">
@@ -24,6 +24,7 @@
     	<th data-field="total" data-sortable="true">Total</th>
     	<th data-field="done" data-sortable="true" data-formatter="historyFormatter">Done</th>
     	<th data-field="created_on" data-sortable="true">Created on</th>
+    	<th data-field="action" data-sortable="true" data-events="historyPauseEvents" data-formatter="historyOperateFormatter">Action</th>
     </thead>
 </table>
 

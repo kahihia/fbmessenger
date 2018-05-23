@@ -154,7 +154,11 @@ class MessengerWorker(QRunnable):
 
         today_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         today = datetime.datetime.strptime(today_str, '%Y-%m-%d %H:%M:%S')
-        t_date = datetime.datetime.strptime(disabled_on, '%Y-%m-%d %H:%M:%S')
+        try:
+            t_date = datetime.datetime.strptime(disabled_on, '%Y-%m-%d %H:%M:%S')
+        except Exception:
+            t_date = datetime.datetime.now()
+
         delta_time = (today - t_date).total_seconds() / 3600.0
 
         if (account_status == ACCOUNT_STATUS_NOT_ACTIVE) or (self.check_message_count() >= max_message_count):

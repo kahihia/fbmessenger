@@ -53,7 +53,6 @@ class Messenger():
             print(chromedriver)
             self.browser = webdriver.Chrome(chrome_options=options, executable_path=chromedriver)
 
-
         self.browser.get('https://www.facebook.com')
         email_elem = self.browser.find_element_by_id('email')
         email_elem.send_keys(self.username)
@@ -64,7 +63,7 @@ class Messenger():
         time.sleep(2)
 
     def check_logged_in(self):
-        if "login_attempt" in self.browser.current_url:
+        if ("login_attempt" in self.browser.current_url) or ("checkpoint/?next" in self.browser.current_url) or ("/login.php?next=" in self.browser.current_url):
             return False
         else:
             return True
@@ -97,21 +96,25 @@ class Messenger():
 
         self.browser.get(url)
         time.sleep(self.delay_on_page)
-        if '<time class="' not in self.browser.page_source:
-            first_name = self.get_first_name(self.browser.page_source, url)
-            text = self.message.format(first_name=first_name)
-            text_elem = self.browser.switch_to.active_element
-            lines = text.split('\n')
-            for row in lines:
-                text_elem.send_keys(row)
-                ActionChains(self.browser).key_down(Keys.SHIFT).send_keys(Keys.RETURN).key_up(Keys.SHIFT).perform()
-            text_elem.send_keys(Keys.RETURN)
+        try:
+            if '<time class="' not in self.browser.page_source:
+                first_name = self.get_first_name(self.browser.page_source, url)
+                text = self.message.format(first_name=first_name)
+                text_elem = self.browser.switch_to.active_element
+                lines = text.split('\n')
+                for row in lines:
+                    text_elem.send_keys(row)
+                    ActionChains(self.browser).key_down(Keys.SHIFT).send_keys(Keys.RETURN).key_up(Keys.SHIFT).perform()
+                text_elem.send_keys(Keys.RETURN)
 
-            time.sleep(self.delay_on_page)
-            if "captcha_dialog" in self.browser.page_source:
-                return ERROR_SECURITY_CODE
-        else:
-            print("Presents!")
+                time.sleep(self.delay_on_page)
+                if "captcha_dialog" in self.browser.page_source:
+                    return ERROR_SECURITY_CODE
+            else:
+                print("Presents!")
+        except Exception as e:
+            print(e)
+            return ERROR_SECURITY_CODE
 
         return ERROR_NONE
 
@@ -160,7 +163,7 @@ class Collector():
         button_elem.click()
 
     def check_logged_in(self):
-        if "login_attempt" in self.browser.current_url:
+        if ("login_attempt" in self.browser.current_url) or ("checkpoint/?next" in self.browser.current_url) or ("/login.php?next=" in self.browser.current_url):
             return False
         else:
             return True
